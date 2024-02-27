@@ -14,9 +14,7 @@
   @include('layouts.nav-bar')
 
   {{-- load-page --}}
-  <div id="content" class="flex ml-32 max-w-6xl mx-auto">
     <livewire:user-manager />
-  </div>
   
   
 </body>

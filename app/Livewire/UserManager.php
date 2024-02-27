@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use Exception;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
 
 class UserManager extends Component
 {
+    protected $listeners = ['user-deleted' => '$refresh'];
+
     #[Rule('min:3|max:50|required')]
     public $name;
 
@@ -22,9 +25,10 @@ class UserManager extends Component
     public function mount()
     {
         $this->users = User::all();
+    
     }
     // create user
-    public function createUser()
+    public function create()
     {
         $this->validate();
 
@@ -41,8 +45,8 @@ class UserManager extends Component
         $this->reset(['name','comments']);
     }
 
-    // Searching user
-    public function selectUser($userId)
+    // Select user for editing
+    public function edit($userId)
     {
         $user = User::find($userId);
         if ($user) {
@@ -53,7 +57,7 @@ class UserManager extends Component
         }
     }
 
-    public function updateUser()
+    public function update()
     {
         $this->validate([
             'name' => 'required|min:3|max:50',
@@ -74,6 +78,33 @@ class UserManager extends Component
             // Reset input fields after updating user
             $this->reset(['name','comments', 'selectedUserId']);
         }
+    }
+
+        // delete user 
+    public function delete($userId)
+    {
+        // Find the user by ID
+        $user = User::find($userId);
+
+        // Check if the user exists
+        if ($user) {
+        // Delete the user
+        $user->delete();
+        }
+
+        // Dispatch event
+        $this->dispatch('user-deleted');
+        // Reset selected user ID if needed
+        if ($this->selectedUserId === $userId) {
+            $this->selectedUserId = null;
+        }
+        
+        $this->reset('name', 'comments', 'selectedUserId');
+    }
+
+    public function cancelEdit()
+    {
+        $this->reset('name', 'comments', 'selectedUserId');
     }
 
     public function render()
