@@ -15,10 +15,7 @@
 
   {{-- load-page --}}
   <div id="content" class="flex ml-32 max-w-6xl mx-auto">
-    {{-- Only include $slot if it's defined --}}
-    @isset($slot)
-        {{ $slot }}
-    @endisset
+    <livewire:user-manager />
   </div>
   
   
