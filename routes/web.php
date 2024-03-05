@@ -1,5 +1,8 @@
 <?php
 
+
+
+use App\Livewire\PcManager;
 use App\Livewire\UserManager;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('layouts.app');
+    return view('components.layouts.app');
 });
 
 Route::get('/users', UserManager::class)->name('users');
+Route::get('/pcs', PcManager::class)->name('pcs');

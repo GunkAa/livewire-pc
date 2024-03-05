@@ -11,11 +11,15 @@
 <body class="bg-gray-200">
   
   {{-- navbar --}}
-  @include('layouts.nav-bar')
+  @include('components.layouts.nav-bar')
 
-  {{-- load-page --}}
-    <livewire:user-manager />
-  
+  {{-- Load page based on route --}}
+  <div>
+    {{-- Only include $slot if it's defined --}}
+    @isset($slot)
+        {{ $slot }}
+    @endisset
+  </div>
   
 </body>
 </html>
