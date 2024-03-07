@@ -20,17 +20,28 @@ class PCManager extends Component
 
     public $pcs;
     public $rooms;
+    public$room_id;
     public $selectedPCId;
     #[Rule('nullable')]
     public $selectedRoomId;
+    public $selectedFilterRoomId;
 
     // mount PCs
     public function mount()
     {
         $this->pcs = PC::all();
         $this->rooms = Room::all();
-    
     }
+
+        // Filter PCs based on the selected room
+        public function filterByRoom()
+        {        
+            $this->pcs = Pc::when($this->room_id, function ($query) {
+                return $query->where('room_id', $this->room_id);
+            })->latest()->get();
+
+        }
+    
     // create PC
     public function create()
     {
@@ -47,7 +58,9 @@ class PCManager extends Component
         $this->pcs = PC::all();
 
         // Reset input fields after creating PC
-        $this->reset(['name','comments','rooms']);
+        $this->reset(['name','comments','selectedRoomId']);
+
+        // dd($this->selectedRoomId);
     }
 
     // Select PC for editing
@@ -58,7 +71,7 @@ class PCManager extends Component
             $this->selectedPCId = $pc->id;
             $this->name = $pc->name;
             $this->comments = $pc->comments;
-            $this->rooms = $pc->selectedRoomId;
+            $this->selectedRoomId = $pc->room_id;
             // Add other fields if needed
         }
     }
@@ -75,14 +88,14 @@ class PCManager extends Component
             $pc->update([
                 'name' => $this->name,
                 'comments' => $this->comments,
-                'rooms' => $this->rooms,                // Add other fields if needed
+                'room_id' => $this->selectedRoomId,                // Add other fields if needed
             ]);
 
             // Refresh PC list
             $this->pcs = PC::all();
 
             // Reset input fields after updating PC
-            $this->reset(['name','comments','rooms','selectedPCId']);
+            $this->reset(['name','comments','selectedPCId','selectedRoomId']);
         }
     }
 
@@ -106,12 +119,12 @@ class PCManager extends Component
             $this->selectedPCId = null;
         }
         
-        $this->reset('name', 'comments', 'selectedPCId');
+        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId');
     }
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedPCId');
+        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId');
     }
 
     public function render()

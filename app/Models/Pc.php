@@ -12,7 +12,7 @@ class Pc extends Model
 
     protected $fillable = [
         'name',
-        'description',
+        'comments',
         'is_available',
         'room_id'
     ];

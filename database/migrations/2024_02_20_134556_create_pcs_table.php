@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pcs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->text('comments')->nullable();
             $table->boolean('is_available')->default(true);
             $table->unsignedBigInteger('room_id')->nullable();
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('set null');
