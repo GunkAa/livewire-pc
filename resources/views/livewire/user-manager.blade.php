@@ -1,7 +1,7 @@
 
 <!-- livewire/user-manager.blade.php -->
 
-<div class="max-w-4xl mx-auto flex flex-wrap">
+<div class="">
     <!-- User Creation Form -->
     <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
         <form wire:submit.prevent="create" class="bg-white rounded-lg shadow-md p-6">

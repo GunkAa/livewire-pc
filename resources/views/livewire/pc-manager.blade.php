@@ -28,7 +28,7 @@
     </div>
 
     {{-- Display Room Selection and PC List --}}
-    <div class="mt-8 ml-24">
+    <div class="mt-8 ml-24" style="width: 395.438px;">
         <div class="mb-4">
             <label for="room" class="font-semibold">Select a Room:</label>
             <select wire:model="room_id" wire:change="filterByRoom" id="room" name="room" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
