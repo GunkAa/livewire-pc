@@ -49,12 +49,12 @@ class UserManager extends Component
     // Select user for editing
     public function edit($userId)
     {
-        $this->editingUser = User::find($userId);
-        if ($this->editingUser) {
-            $this->selectedUserId = $this->editingUser->id;
-            $this->name = $this->editingUser->name;
-            $this->comments = $this->editingUser->comments;
-            // Add other fields if needed
+        $user = User::find($userId);
+        if ($user) {
+            $this->selectedUserId = $user->id;
+            $this->name = $user->name;
+            $this->comments = $user->comments;
+            $this->editingUser = true; // Set editing to true
         }
     }
 
@@ -77,7 +77,7 @@ class UserManager extends Component
             $this->users = User::all();
 
             // Reset input fields after updating user
-            $this->reset(['name','comments', 'selectedUserId']);
+            $this->reset(['name','comments', 'selectedUserId','editingUser']);
         }
     }
 
@@ -106,6 +106,7 @@ class UserManager extends Component
     public function cancelEdit()
     {
         $this->reset('name', 'comments', 'selectedUserId','editingUser');
+
     }
 
     public function render()
