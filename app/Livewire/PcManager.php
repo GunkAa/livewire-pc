@@ -25,6 +25,7 @@ class PCManager extends Component
     #[Rule('nullable')]
     public $selectedRoomId;
     public $selectedFilterRoomId;
+    public $editingPC = false;
 
     // mount PCs
     public function mount()
@@ -34,13 +35,15 @@ class PCManager extends Component
     }
 
         // Filter PCs based on the selected room
-        public function filterByRoom()
-        {        
-            $this->pcs = Pc::when($this->room_id, function ($query) {
-                return $query->where('room_id', $this->room_id);
-            })->latest()->get();
 
-        }
+        public function filterByRoom()
+{        
+    if ($this->room_id) {
+        $this->pcs = Pc::where('room_id', $this->room_id)->latest()->get();
+    } else {
+        $this->pcs = Pc::latest()->get();
+    }
+}
     
     // create PC
     public function create()
@@ -57,8 +60,11 @@ class PCManager extends Component
         // Refresh PC list
         $this->pcs = PC::all();
 
+        // Filter PCs based on the selected room
+        $this->filterByRoom();
+
         // Reset input fields after creating PC
-        $this->reset(['name','comments','selectedRoomId']);
+        $this->reset(['name','comments','selectedRoomId',]);
 
         // dd($this->selectedRoomId);
     }
@@ -66,13 +72,12 @@ class PCManager extends Component
     // Select PC for editing
     public function edit($pcId)
     {
-        $pc = PC::find($pcId);
-        if ($pc) {
-            $this->selectedPCId = $pc->id;
-            $this->name = $pc->name;
-            $this->comments = $pc->comments;
-            $this->selectedRoomId = $pc->room_id;
-            // Add other fields if needed
+        $this->editingPC = PC::find($pcId);
+        if ($this->editingPC) {
+            $this->selectedPCId = $this->editingPC->id;
+            $this->name = $this->editingPC->name;
+            $this->comments = $this->editingPC->comments;
+            $this->selectedRoomId = $this->editingPC->room_id;
         }
     }
 
@@ -94,8 +99,11 @@ class PCManager extends Component
             // Refresh PC list
             $this->pcs = PC::all();
 
+            // Filter PCs based on the selected room
+            $this->filterByRoom();
+
             // Reset input fields after updating PC
-            $this->reset(['name','comments','selectedPCId','selectedRoomId']);
+            $this->reset(['name','comments','selectedPCId','selectedRoomId','editingPC']);
         }
     }
 
@@ -119,12 +127,12 @@ class PCManager extends Component
             $this->selectedPCId = null;
         }
         
-        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId');
+        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId','editingPC');
     }
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId');
+        $this->reset('name', 'comments', 'selectedPCId','selectedRoomId','editingPC');
     }
 
     public function render()

@@ -20,6 +20,7 @@ class UserManager extends Component
     public $users;
 
     public $selectedUserId;
+    public $editingUser = false;
 
     // mount users
     public function mount()
@@ -48,11 +49,11 @@ class UserManager extends Component
     // Select user for editing
     public function edit($userId)
     {
-        $user = User::find($userId);
-        if ($user) {
-            $this->selectedUserId = $user->id;
-            $this->name = $user->name;
-            $this->comments = $user->comments;
+        $this->editingUser = User::find($userId);
+        if ($this->editingUser) {
+            $this->selectedUserId = $this->editingUser->id;
+            $this->name = $this->editingUser->name;
+            $this->comments = $this->editingUser->comments;
             // Add other fields if needed
         }
     }
@@ -104,7 +105,7 @@ class UserManager extends Component
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedUserId');
+        $this->reset('name', 'comments', 'selectedUserId','editingUser');
     }
 
     public function render()
