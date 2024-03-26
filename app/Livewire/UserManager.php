@@ -10,15 +10,11 @@ use Livewire\Attributes\Rule;
 class UserManager extends Component
 {
     protected $listeners = ['user-deleted' => '$refresh'];
-
     #[Rule('min:3|max:50|required')]
     public $name;
-
     #[Rule('max:250')]
     public $comments;
-
     public $users;
-
     public $selectedUserId;
     public $editingUser = false;
 
@@ -49,12 +45,12 @@ class UserManager extends Component
     // Select user for editing
     public function edit($userId)
     {
-        $user = User::find($userId);
-        if ($user) {
-            $this->selectedUserId = $user->id;
-            $this->name = $user->name;
-            $this->comments = $user->comments;
-            $this->editingUser = true; // Set editing to true
+        $this->editingUser = User::find($userId);
+        if ($this->editingUser) {
+            $this->selectedUserId = $this->editingUser->id;
+            $this->name = $this->editingUser->name;
+            $this->comments = $this->editingUser->comments;
+            // Add other fields if needed
         }
     }
 
@@ -77,7 +73,7 @@ class UserManager extends Component
             $this->users = User::all();
 
             // Reset input fields after updating user
-            $this->reset(['name','comments', 'selectedUserId','editingUser']);
+            $this->reset(['name','comments','selectedUserId','editingUser']);
         }
     }
 
@@ -100,13 +96,12 @@ class UserManager extends Component
             $this->selectedUserId = null;
         }
         
-        $this->reset('name', 'comments', 'selectedUserId');
+        $this->reset('name','comments','selectedUserId','editingUser');
     }
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedUserId','editingUser');
-
+        $this->reset('name', 'comments','selectedUserId','editingUser');
     }
 
     public function render()

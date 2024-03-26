@@ -54,6 +54,7 @@ class PCManager extends Component
             'name' => $this->name,
             'comments' => $this->comments,
             'room_id' => $this->selectedRoomId,
+            'is_available' => true,
             // Add other fields if needed
         ]);
 
@@ -86,6 +87,7 @@ class PCManager extends Component
         $this->validate([
             'name' => 'required|min:3|max:50',
             'comments' => 'max:250',
+            'is_available' => 'required|boolean',
         ]);
 
         $pc = PC::find($this->selectedPCId);
