@@ -73,7 +73,7 @@ class UserManager extends Component
             $this->users = User::all();
 
             // Reset input fields after updating user
-            $this->reset(['name','comments', 'selectedUserId']);
+            $this->reset(['name','comments','selectedUserId','editingUser']);
         }
     }
 
@@ -96,12 +96,12 @@ class UserManager extends Component
             $this->selectedUserId = null;
         }
         
-        $this->reset('name', 'comments', 'selectedUserId');
+        $this->reset('name','comments','selectedUserId','editingUser');
     }
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedUserId','editingUser');
+        $this->reset('name', 'comments','selectedUserId','editingUser');
     }
 
     public function render()
