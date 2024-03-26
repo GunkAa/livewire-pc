@@ -47,18 +47,23 @@ class AssignmentManager extends Component
     private function getAvailabilityByDay($pcs, $selectedDay)
     {
         $availabilityByDay = [];
-    
+
         foreach ($pcs as $pc) {
             // Check if the PC is available (based on the is_available field)
-            $isAvailable = $pc->is_available;    
+            $isAvailable = $pc->is_available;
             $availabilityByDay[] = [
                 'pc' => $pc,
                 'isAvailable' => $isAvailable,
             ];
         }
-    
+
         return $availabilityByDay;
     }
 
-    // Add methods for handling user interactions (e.g., create, edit, delete) if needed
+    // Method to handle assigning a user to a PC
+    public function assignUser($pcId)
+    {
+        // Implement your logic to assign a user to a PC
+        // You can use the $pcId to identify the PC being assigned
+    }
 }

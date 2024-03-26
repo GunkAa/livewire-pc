@@ -1,3 +1,4 @@
+<!-- assignment-manager.blade.php -->
 <div class="container mx-auto">
     <h1 class="text-3xl font-semibold mb-5">Assignment Manager</h1>
 
@@ -14,10 +15,10 @@
     <!-- PC Availability -->
     <div class="grid grid-cols-4 gap-4">
         @foreach ($availabilityByDay as $pcDay)
-            <div class="bg-{{ $pcDay['isAvailable'] ? 'green' : 'red' }}-500 text-white font-bold text-center py-4 rounded-lg">
+            <div wire:click="assignUser({{ $pcDay['pc']->id }})" class="cursor-pointer bg-{{ $pcDay['isAvailable'] ? 'green' : 'red' }}-500 text-white font-bold text-center py-4 rounded-lg">
                 <p class="text-lg">{{ $pcDay['pc']->name }}</p>
                 <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
             </div>
         @endforeach
     </div>
-</div
+</div>
