@@ -20,27 +20,4 @@
             </div>
         @endforeach
     </div>
-
-    <!-- PC Assignments Table -->
-    <h2 class="text-2xl font-semibold mt-8 mb-4">PC Assignments</h2>
-    <div class="overflow-x-auto">
-        <table class="table-auto border w-full">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2">User</th>
-                    <th class="px-4 py-2">PC</th>
-                    <th class="px-4 py-2">Day of Week</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($pcAssignments as $pcAssignment)
-                    <tr>
-                        <td class="border px-4 py-2">{{ $pcAssignment->user->name }}</td>
-                        <td class="border px-4 py-2">{{ $pcAssignment->pc->name }}</td>
-                        <td class="border px-4 py-2">{{ $pcAssignment->day_of_week }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
 </div
