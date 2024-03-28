@@ -20,6 +20,8 @@
         {{ $slot }}
     @endisset
   </div>
+
+
   
 </body>
 </html>
