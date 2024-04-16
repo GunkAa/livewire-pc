@@ -2,10 +2,13 @@
 
 namespace App\Livewire;
 
+use Log;
 use App\Models\Pc;
 use Carbon\Carbon;
+use App\Models\Room;
 use App\Models\User;
 use Livewire\Component;
+use App\Models\PcAssignment;
 
 
 class AssignmentManager extends Component
@@ -16,6 +19,8 @@ class AssignmentManager extends Component
     public $assigningPc;
     public $showAssignUserModal = false;
     public $availableUsers;
+    public $selectedPcId;
+    public $selectedUserId; 
 
     public function mount()
     {
@@ -29,21 +34,24 @@ class AssignmentManager extends Component
         return view('livewire.assignment-manager');
     }
 
-    public function fetchAvailabilityByRoom()
-    {
-        $this->availabilityByRoom = Pc::with('room')->get()
-            ->groupBy('room.name')
-            ->map(function ($pcs) {
-                return $pcs->map(function ($pc) {
-                    $isAvailable = $pc->is_available; // Check the is_available field
-                    return [
-                        'pc' => $pc,
-                        'isAvailable' => $isAvailable,
-                    ];
-                });
-            });
-    }
+public function fetchAvailabilityByRoom()
+{
+    $this->availabilityByRoom = Pc::with(['room', 'user']) // Eager load room and user
+        ->get()
+        ->groupBy('room.name')
+        ->map(function ($pcs) {
+            return $pcs->map(function ($pc) {
+                $isAvailable = $pc->is_available; // Check the is_available field
+                $assignedUser = $pc->assignments ? $pc->assignments->first()->user : null;
 
+                return [
+                    'pc' => $pc,
+                    'isAvailable' => $isAvailable,
+                    'assignedUser' => $assignedUser,
+                ];
+            });
+        });
+}
     public function assignUser($pcId)
     {
         $pc = Pc::find($pcId);
@@ -55,8 +63,12 @@ class AssignmentManager extends Component
         }
         
         // Check if any users are already assigned to this PC on the selected day
-        if (!$this->isPcAvailable($pc)) {
-            session()->flash('error', 'PC is not available for assignment on ' . $this->selectedDay);
+        $existingAssignment = PcAssignment::where('pc_id', $pcId)
+            ->where('day_of_week', $this->selectedDay)
+            ->first();
+    
+        if ($existingAssignment) {
+            session()->flash('error', 'PC is already assigned to ' . $existingAssignment->user->name . ' on ' . $this->selectedDay);
             return;
         }
     
@@ -67,9 +79,33 @@ class AssignmentManager extends Component
     
         // Set properties to control modal and available users list
         $this->assigningPc = $pc;
-        $this->showAssignUserModal = true;
+        $this->selectedPcId = $pcId;
         $this->availableUsers = $availableUsers;
-        
+        $this->showAssignUserModal = true;
+    }
+    public function assign()
+    {
+    // Validate selected user
+    $this->validate([
+        'selectedUserId' => 'required|exists:users,id',
+    ]);
+
+    // Create or update the assignment
+    PcAssignment::updateOrCreate(
+        [
+            'pc_id' => $this->selectedPcId,
+            'day_of_week' => $this->selectedDay,
+        ],
+        [
+            'user_id' => $this->selectedUserId,
+        ]
+    );
+
+    // Close the modal and reset properties
+    $this->showAssignUserModal = false;
+    $this->selectedUserId = null;
+
+    session()->flash('success', 'User assigned successfully.');
     }
 
     public function closeModal()
@@ -77,15 +113,5 @@ class AssignmentManager extends Component
         $this->showAssignUserModal = false;
     }
     
-    public function isPcAvailable($pc)
-    {
-        return $pc->is_available; // Check the is_available field
-    }
-    
 
-
-    public function userAssigned()
-    {
-        $this->fetchAvailabilityByRoom();
-    }
 }
