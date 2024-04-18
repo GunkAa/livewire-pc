@@ -4,7 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Models\PcAssignment;
+use App\Models\Assignment;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,6 +45,6 @@ class User extends Authenticatable
     // Define the assignments relationship
     public function assignments()
     {
-        return $this->hasMany(PcAssignment::class);
+        return $this->hasMany(Assignment::class);
     }
 }

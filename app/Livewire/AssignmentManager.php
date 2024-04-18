@@ -4,114 +4,60 @@ namespace App\Livewire;
 
 use Log;
 use App\Models\Pc;
-use Carbon\Carbon;
-use App\Models\Room;
+
 use App\Models\User;
 use Livewire\Component;
-use App\Models\PcAssignment;
+use App\Models\Assignment;
+use Illuminate\Support\Facades\DB;
+
 
 
 class AssignmentManager extends Component
 {
-    public $days;
-    public $selectedDay;
-    public $availabilityByRoom;
-    public $assigningPc;
-    public $showAssignUserModal = false;
-    public $availableUsers;
+    public $selectedUserId;
     public $selectedPcId;
-    public $selectedUserId; 
+    public $dayOfWeek;
+    public $timeOfDay;
+    public $users;
+    public $pcs;
+    public $days;
 
+    // Fetch all necessary data on component mount
     public function mount()
     {
-        $this->days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-        $this->selectedDay = Carbon::now()->format('l');
-        $this->fetchAvailabilityByRoom();
+        $this->users = User::all();
+        $this->pcs = Pc::all();
+        $this->days = [
+            'Monday Morning', 'Monday Afternoon',
+            'Tuesday Morning', 'Tuesday Afternoon',
+            'Wednesday Morning', 'Wednesday Afternoon',
+            'Thursday Morning', 'Thursday Afternoon',
+            'Friday Morning', 'Friday Afternoon'
+        ];
+    }
+
+    public function createAssignment()
+    {
+        $validatedData = $this->validate([
+            'selectedUserId' => 'required|exists:users,id',
+            'selectedPcId' => 'required|exists:pcs,id',
+            'dayOfWeek' => 'required|string',
+            'timeOfDay' => 'required|string',
+        ]);
+
+        Assignment::create([
+            'user_id' => $validatedData['selectedUserId'],
+            'pc_id' => $validatedData['selectedPcId'],
+            'day_of_week' => $validatedData['dayOfWeek'] . ' ' . $validatedData['timeOfDay'],
+        ]);
+
+        session()->flash('message', 'Assignment created successfully!');
+
+        $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'timeOfDay']);
     }
 
     public function render()
     {
         return view('livewire.assignment-manager');
     }
-
-public function fetchAvailabilityByRoom()
-{
-    $this->availabilityByRoom = Pc::with(['room', 'user']) // Eager load room and user
-        ->get()
-        ->groupBy('room.name')
-        ->map(function ($pcs) {
-            return $pcs->map(function ($pc) {
-                $isAvailable = $pc->is_available; // Check the is_available field
-                $assignedUser = $pc->assignments ? $pc->assignments->first()->user : null;
-
-                return [
-                    'pc' => $pc,
-                    'isAvailable' => $isAvailable,
-                    'assignedUser' => $assignedUser,
-                ];
-            });
-        });
-}
-    public function assignUser($pcId)
-    {
-        $pc = Pc::find($pcId);
-        
-        // Check if the PC exists
-        if (!$pc) {
-            session()->flash('error', 'PC not found.');
-            return;
-        }
-        
-        // Check if any users are already assigned to this PC on the selected day
-        $existingAssignment = PcAssignment::where('pc_id', $pcId)
-            ->where('day_of_week', $this->selectedDay)
-            ->first();
-    
-        if ($existingAssignment) {
-            session()->flash('error', 'PC is already assigned to ' . $existingAssignment->user->name . ' on ' . $this->selectedDay);
-            return;
-        }
-    
-        // Fetch available users for assignment
-        $availableUsers = User::whereDoesntHave('assignments', function ($query) {
-            $query->where('day_of_week', $this->selectedDay);
-        })->get();
-    
-        // Set properties to control modal and available users list
-        $this->assigningPc = $pc;
-        $this->selectedPcId = $pcId;
-        $this->availableUsers = $availableUsers;
-        $this->showAssignUserModal = true;
-    }
-    public function assign()
-    {
-    // Validate selected user
-    $this->validate([
-        'selectedUserId' => 'required|exists:users,id',
-    ]);
-
-    // Create or update the assignment
-    PcAssignment::updateOrCreate(
-        [
-            'pc_id' => $this->selectedPcId,
-            'day_of_week' => $this->selectedDay,
-        ],
-        [
-            'user_id' => $this->selectedUserId,
-        ]
-    );
-
-    // Close the modal and reset properties
-    $this->showAssignUserModal = false;
-    $this->selectedUserId = null;
-
-    session()->flash('success', 'User assigned successfully.');
-    }
-
-    public function closeModal()
-    {
-        $this->showAssignUserModal = false;
-    }
-    
-
 }
