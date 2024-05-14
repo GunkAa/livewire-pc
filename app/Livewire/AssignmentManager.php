@@ -15,6 +15,7 @@ class AssignmentManager extends Component
     public $pcs;
     public $selectedUserId;
     public $selectedPcId;
+    public $selectedAssignmentId;
     public $dayOfWeek;
     public $days;
     public $assignments;
@@ -89,6 +90,7 @@ class AssignmentManager extends Component
         $this->selectedUserId = $assignment->user_id;
         $this->selectedPcId = $assignment->pc_id;
         $this->dayOfWeek = $assignment->day_of_week;
+        $this->selectedAssignmentId = $assignmentId;
         $this->editingAssignment = $assignmentId; // Set the editingAssignment to the ID of the assignment being edited
     }
 
@@ -158,7 +160,7 @@ class AssignmentManager extends Component
                 $this->selectedUserId = null;
             }
         // Reset the form and reload the data
-        $this->reset(['selectedUserId','selectedPcId','dayOfWeek','editingAssignment']);
+        $this->reset(['selectedUserId','selectedPcId','dayOfWeek','editingAssignment','selectedAssignmentId',]);
         $this->assignments = Assignment::all();
     }
 
