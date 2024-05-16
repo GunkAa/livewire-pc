@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use App\Models\Room;
 use App\Models\User;
 use App\Models\Assignment;
@@ -37,9 +38,20 @@ class Pc extends Model
      * @param  string  $selectedDay
      * @return bool
      */
+    // public function isAvailable($selectedDay)
+    // {
+    //     return $this->assignments()->where('day_of_week', '=', $selectedDay)->count() === 0;
+    // }
+
     public function isAvailable($selectedDay)
     {
-        return $this->assignments()->where('day_of_week', '=', $selectedDay)->count() === 0;
+        \Illuminate\Support\Facades\DB::enableQueryLog(); // Enable query logging
+        $count = $this->assignments()->where('day_of_week', '=', $selectedDay)->count();
+        $queries = 
+        \Illuminate\Support\Facades\DB::getQueryLog(); // Get the executed queries
+        // Log or dd() the queries to inspect them
+        dd($queries);
+        return $count === 0;
     }
 
     public function room()
@@ -67,4 +79,5 @@ class Pc extends Model
     {
         return $this->assignments()->where('day_of_week', '=', $selectedDay)->exists();
     }
+
 }

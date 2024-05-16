@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\User;
 use Livewire\Component;
+use App\Models\Assignment;
 
 class Home extends Component
 {
@@ -14,6 +15,9 @@ class Home extends Component
     public $rooms;
     public $users;
     public $availabilityByDay;
+    public $selectedUserId;
+    public $selectedPcId;
+    public $editingAssignment;
 
     public function mount()
     {
@@ -27,12 +31,13 @@ class Home extends Component
         $this->users = User::all();
         $this->loadAvailability();
     }
+
     public function loadAvailability()
     {
         $this->availabilityByDay = [];
         foreach ($this->rooms as $room) {
             $pcs = $room->pcs;
-            $availabilityByDay[$room->id] = $this->getAvailabilityByDay($pcs, $this->selectedDay);
+            $this->availabilityByDay[$room->id] = $this->getAvailabilityByDay($pcs, $this->selectedDay);
         }
     }
 
@@ -50,6 +55,30 @@ class Home extends Component
 
         return $availabilityByDay;
     }
+
+    public function editAssignment($assignmentId)
+    {
+        $this->editingAssignment = Assignment::findOrFail($assignmentId);
+        $this->selectedUserId = $this->editingAssignment->user_id;
+        $this->selectedPcId = $this->editingAssignment->pc_id;
+    }
+
+    public function updateAssignment()
+    {
+        $this->validate([
+            'selectedUserId' => 'required|exists:users,id',
+            'selectedPcId' => 'required|exists:pcs,id',
+        ]);
+
+        $this->editingAssignment->update([
+            'user_id' => $this->selectedUserId,
+            'pc_id' => $this->selectedPcId,
+        ]);
+
+        session()->flash('success', 'Assignment updated successfully.');
+        $this->reset(['selectedUserId', 'selectedPcId', 'editingAssignment']);
+    }
+
     public function render()
     {
         return view('livewire.home');
