@@ -26,43 +26,73 @@ class Home extends Component
             'Wednesday Morning', 'Wednesday Afternoon', 'Thursday Morning', 'Thursday Afternoon',
             'Friday Morning', 'Friday Afternoon'
         ];
-        $this->selectedDay = Carbon::now()->format('l');
+        $this->selectedDay = $this->days[0];
         $this->rooms = Room::with('pcs')->get();
         $this->users = User::all();
         $this->loadAvailability();
+
+        // Debugging initial load
+
+        // dd('Initial Load', [
+        //     'selectedDay' => $this->selectedDay,
+        //     'rooms' => $this->rooms,
+        //     'users' => $this->users,
+        // ]);
     }
 
     public function loadAvailability()
     {
         $this->availabilityByDay = [];
+
         foreach ($this->rooms as $room) {
             $pcs = $room->pcs;
-            $this->availabilityByDay[$room->id] = $this->getAvailabilityByDay($pcs, $this->selectedDay);
-        }
-    }
-
-    private function getAvailabilityByDay($pcs, $selectedDay)
-    {
-        $availabilityByDay = [];
-
-        foreach ($pcs as $pc) {
-            $isAvailable = $pc->isAvailable($selectedDay);
-            $availabilityByDay[] = [
-                'pc' => $pc,
-                'isAvailable' => $isAvailable,
-            ];
+            foreach ($pcs as $pc) {
+                $isAvailable = $pc->isAvailable($this->selectedDay);
+                $this->availabilityByDay[$room->id][] = [
+                    'pc' => $pc,
+                    'isAvailable' => $isAvailable,
+                ];
+            }
         }
 
-        return $availabilityByDay;
+        // Debugging availability load
+
+        // dd('Availability Loaded', [
+        //     'selectedDay' => $this->selectedDay,
+        //     'availabilityByDay' => $this->availabilityByDay,
+        // ]);
     }
 
-    public function editAssignment($assignmentId)
+    public function dayChanged($value)
     {
-        $this->editingAssignment = Assignment::findOrFail($assignmentId);
-        $this->selectedUserId = $this->editingAssignment->user_id;
-        $this->selectedPcId = $this->editingAssignment->pc_id;
+        $this->selectedDay = $value;
+        $this->loadAvailability();
+
+        // Debugging day update
+
+        // dd('Day Updated', [
+        //     'selectedDay' => $this->selectedDay,
+        //     'availabilityByDay' => $this->availabilityByDay,
+        // ]);
     }
 
+    public function editAssignment($pcId)
+    {
+        // dd("Edit Assignment called with PC ID: " . $pcId);
+
+        $assignment = Assignment::where('pc_id', $pcId)
+            ->where('day_of_week', $this->selectedDay)
+            ->first();
+
+        // Debug: Dump the retrieved assignment
+        // dd($assignment);
+
+        if ($assignment) {
+            $this->selectedUserId = $assignment->user_id;
+            $this->selectedPcId = $assignment->pc_id;
+            $this->editingAssignment = true;
+        }
+    }
     public function updateAssignment()
     {
         $this->validate([
@@ -70,17 +100,30 @@ class Home extends Component
             'selectedPcId' => 'required|exists:pcs,id',
         ]);
 
-        $this->editingAssignment->update([
+        $assignment = Assignment::findOrFail($this->editingAssignment);
+
+        $assignment->update([
             'user_id' => $this->selectedUserId,
             'pc_id' => $this->selectedPcId,
         ]);
 
         session()->flash('success', 'Assignment updated successfully.');
         $this->reset(['selectedUserId', 'selectedPcId', 'editingAssignment']);
+
+        return redirect()->to('/home');
     }
 
     public function render()
     {
+        $this->loadAvailability();
+
+        // Debugging render
+
+        // dd('Render', [
+        //     'selectedDay' => $this->selectedDay,
+        //     'availabilityByDay' => $this->availabilityByDay,
+        // ]);
+
         return view('livewire.home');
     }
 }
