@@ -76,21 +76,24 @@ class Home extends Component
         // ]);
     }
 
-    public function editAssignment($pcId)
+    public function editAssignment($assignmentId)
     {
-        // dd("Edit Assignment called with PC ID: " . $pcId);
-
-        $assignment = Assignment::where('pc_id', $pcId)
-            ->where('day_of_week', $this->selectedDay)
-            ->first();
-
-        // Debug: Dump the retrieved assignment
-        // dd($assignment);
-
+        if (!$assignmentId) {
+            // Handle the case when there is no assignment
+            $this->editingAssignment = null;
+            $this->selectedUserId = null;
+            $this->selectedPcId = null;
+            return;
+        }
+    
+        $assignment = Assignment::find($assignmentId);
+    
         if ($assignment) {
             $this->selectedUserId = $assignment->user_id;
             $this->selectedPcId = $assignment->pc_id;
-            $this->editingAssignment = true;
+            $this->editingAssignment = $assignment;
+        } else {
+            $this->editingAssignment = null;
         }
     }
     public function updateAssignment()

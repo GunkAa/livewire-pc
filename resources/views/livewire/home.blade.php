@@ -20,22 +20,26 @@
                         <h2 class="text-xl font-semibold mb-2">{{ $room->name }}</h2>
                         <div class="grid grid-cols-4 gap-4">
                             @foreach ($availabilityByDay[$room->id] as $pcDay)
-                            <a href="{{ route('assignments', ['pc' => $pcDay['pc']->id, 'day' => $selectedDay]) }}" class="bg-{{ $pcDay['isAvailable'] ? 'green' : 'red' }}-500 text-white font-bold text-center py-4 rounded-lg">
+                            @php
+                                $assignment = \App\Models\Assignment::where('pc_id', $pcDay['pc']->id)
+                                    ->where('day_of_week', $selectedDay)
+                                    ->first();
+                            @endphp
+                            <a href="#" wire:click.prevent="editAssignment({{ $assignment ? $assignment->id : 0 }})" class="bg-{{ $pcDay['isAvailable'] ? 'green' : 'red' }}-500 text-white font-bold text-center py-4 rounded-lg">
                                 <p class="text-lg">{{ $pcDay['pc']->name }}</p>
                                 <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
                                 <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
-                                <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p> <!-- Debug line -->
+                                <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
                             </a>
-                            @endforeach
+                        @endforeach
                         </div>
                     </div>
                 @endif
             @endforeach
         </div>
-    </div>
 
-            <!-- Assignment Edit Form -->
-            @if ($editingAssignment)
+        <!-- Assignment Edit Form -->
+        @if ($editingAssignment)
             <form wire:submit.prevent="updateAssignment">
                 <div class="mt-5">
                     <label for="selectedUserId" class="font-semibold">Select User:</label>

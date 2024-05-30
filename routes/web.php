@@ -26,6 +26,6 @@ Route::get('/home', Home::class)->name('home');
 Route::get('/users', UserManager::class)->name('users');
 Route::get('/pcs', PcManager::class)->name('pcs');
 Route::get('/assignments', AssignmentManager::class )->name('assignments');
-Route::get('/pc-assignments-edit-day', [AssignmentManager::class, 'editDay'])->name('pc-assignments-edit-day');
+
 
 
