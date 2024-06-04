@@ -20,6 +20,7 @@ class AssignmentManager extends Component
     public $days;
     public $assignments;
     public $editingAssignment;
+    public $selectedDay;
 
     public function mount()
     {
@@ -84,14 +85,15 @@ class AssignmentManager extends Component
     // Edit Assignment
     public function editAssignment($assignmentId)
     {
-        $assignment = Assignment::findOrFail($assignmentId);
-        
-        // Set the properties for editing
-        $this->selectedUserId = $assignment->user_id;
-        $this->selectedPcId = $assignment->pc_id;
-        $this->dayOfWeek = $assignment->day_of_week;
-        $this->selectedAssignmentId = $assignmentId;
-        $this->editingAssignment = $assignmentId; // Set the editingAssignment to the ID of the assignment being edited
+        if ($assignmentId) {
+            $assignment = Assignment::findOrFail($assignmentId);
+
+            $this->selectedUserId = $assignment->user_id;
+            $this->selectedPcId = $assignment->pc_id;
+            $this->selectedDay = $assignment->day_of_week;
+            $this->selectedAssignmentId = $assignment->id;
+            $this->editingAssignment = $assignment->id;
+        }
     }
 
     // Update Assignment
