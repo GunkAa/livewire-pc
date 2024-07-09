@@ -10,7 +10,7 @@ use App\Models\Assignment;
 
 class AssignmentManager extends Component
 {
-    // protected $listeners = ['assignment-deleted' => '$refresh'];
+    // Protected $listeners = ['assignment-deleted' => '$refresh'];
     public $users;
     public $pcs;
     public $selectedUserId;
@@ -20,7 +20,7 @@ class AssignmentManager extends Component
     public $days;
     public $assignments;
     public $editingAssignment;
-    public $selectedDay;
+    
 
     public function mount()
     {
@@ -85,15 +85,13 @@ class AssignmentManager extends Component
     // Edit Assignment
     public function editAssignment($assignmentId)
     {
-        if ($assignmentId) {
-            $assignment = Assignment::findOrFail($assignmentId);
-
-            $this->selectedUserId = $assignment->user_id;
-            $this->selectedPcId = $assignment->pc_id;
-            $this->selectedDay = $assignment->day_of_week;
-            $this->selectedAssignmentId = $assignment->id;
-            $this->editingAssignment = $assignment->id;
-        }
+        $assignment = Assignment::findOrFail($assignmentId);
+        
+        // Set the properties for editing
+        $this->selectedUserId = $assignment->user_id;
+        $this->selectedPcId = $assignment->pc_id;
+        $this->dayOfWeek = $assignment->day_of_week;
+        $this->editingAssignment = $assignmentId; // Set the editingAssignment to the ID of the assignment being edited
     }
 
     // Update Assignment
@@ -162,7 +160,7 @@ class AssignmentManager extends Component
                 $this->selectedUserId = null;
             }
         // Reset the form and reload the data
-        $this->reset(['selectedUserId','selectedPcId','dayOfWeek','editingAssignment','selectedAssignmentId',]);
+        $this->reset(['selectedUserId','selectedPcId','dayOfWeek','editingAssignment']);
         $this->assignments = Assignment::all();
     }
 

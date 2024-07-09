@@ -21,6 +21,8 @@
     @endisset
   </div>
 
+  Undefined variable $pcs
+
 
 
 </body>
