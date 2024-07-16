@@ -11,18 +11,21 @@ use App\Models\Assignment;
 
 class Home extends Component
 {
+    // Define component properties
+    public $selectedUserId;
+    public $selectedPcId;
+    public $dayOfWeek;
     public $days;
     public $selectedDay;
     public $rooms;
     public $users;
     public $availabilityByDay;
-    public $selectedUserId;
-    public $selectedPcId;
     public $editingAssignment;
-    public $dayOfWeek;
     public $showForm = false;  // To control form visibility
     public $selectedAssignmentId;
+    public $assignmentId;
     public $pcs;
+
 
     public function mount()
     {
@@ -60,15 +63,32 @@ class Home extends Component
         $this->loadAvailability();
     }
 
-    public function editAssignment($assignmentId)
+    public function editAssignment($pcId)
     {
-        $assignment = Assignment::find($assignmentId);
+        $assignment = Assignment::where('pc_id', $pcId)
+            ->where('day_of_week', $this->selectedDay)
+            ->first();
+    
         if ($assignment) {
+            // Assignment found: Populate form fields for editing
             $this->selectedUserId = $assignment->user_id;
             $this->selectedPcId = $assignment->pc_id;
             $this->dayOfWeek = $assignment->day_of_week;
             $this->selectedAssignmentId = $assignment->id;
             $this->showForm = true;  // Show the form
+        } else {
+            // No assignment found: Prepare for creating a new assignment
+            $this->selectedPcId = $pcId; // Set the PC ID
+            $this->selectedUserId = null; // Clear user ID (if previously set)
+            $this->dayOfWeek = $this->selectedDay; // Set the day of the week
+    
+            // Clear selected assignment ID (if previously set)
+            $this->selectedAssignmentId = null;
+    
+            $this->showForm = true; // Show the form to create a new assignment
+    
+    
+            // You can also perform any additional initialization needed for creating a new assignment
         }
     }
 
@@ -82,18 +102,15 @@ class Home extends Component
     {
         $validatedData = $this->validate([
             'selectedUserId' => 'required|exists:users,id',
-            'selectedPcId' => 'required|exists:pcs,id',
-            'dayOfWeek' => 'required|in:Monday Morning,Monday Afternoon,Tuesday Morning,Tuesday Afternoon,Wednesday Morning,Wednesday Afternoon,Thursday Morning,Thursday Afternoon,Friday Morning,Friday Afternoon'
+
         ]);
-
+    
         $assignment = Assignment::findOrFail($this->selectedAssignmentId);
-
+    
         $assignment->update([
             'user_id' => $validatedData['selectedUserId'],
-            'pc_id' => $validatedData['selectedPcId'],
-            'day_of_week' => $validatedData['dayOfWeek'],
         ]);
-
+    
         $this->loadAvailability();
         $this->showForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
@@ -101,9 +118,11 @@ class Home extends Component
 
     public function deleteAssignment($assignmentId)
     {
+        // Logic to delete the assignment
         $assignment = Assignment::findOrFail($assignmentId);
         $assignment->delete();
-
+    
+        // Reload availability and reset form
         $this->loadAvailability();
         $this->showForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);

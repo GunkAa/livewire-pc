@@ -13,6 +13,7 @@
             </div>
         </form>
 
+
         <div class="grid grid-cols-2 gap-4">
             @foreach ($rooms as $room)
                 @if (isset($availabilityByDay[$room->id]))
@@ -34,59 +35,33 @@
         </div>
     </div>
 
+
+
     @if ($showForm)
-    <p>Form should display here</p>
-        <form wire:submit.prevent="updateAssignment" class="bg-white rounded-lg shadow-md p-6 mt-4">
-            <h2 class="text-lg font-semibold mb-4">Update Assignment</h2>
+    <form wire:submit.prevent="updateAssignment" class="bg-white rounded-lg shadow-md p-6 mt-4">
+        <h2 class="text-lg font-semibold mb-4">Update Assignment</h2>
 
-            <!-- Hidden Assignment ID -->
-            <input type="hidden" wire:model="selectedAssignmentId">
+        <!-- Hidden Assignment ID -->
+        <input type="hidden" wire:model="selectedAssignmentId">
 
-            <!-- User Selection -->
-            <div class="mb-4">
-                <label for="edit-user" class="text-sm font-semibold text-gray-700">User:</label>
-                <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                    <option value="">Select a user</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
-                @error('selectedUserId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-            </div>
+        <!-- User Selection -->
+        <div class="mb-4">
+            <label for="edit-user" class="text-sm font-semibold text-gray-700">User:</label>
+            <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                <option value="">Select a user</option>
+                @foreach ($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                @endforeach
+            </select>
+            @error('selectedUserId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+        </div>
 
-            <!-- PC Selection -->
-            <div class="mb-4">
-                <label for="edit-pc" class="text-sm font-semibold text-gray-700">PC:</label>
-                <select wire:model="selectedPcId" id="edit-pc" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                    <option value="">Select a PC</option>
-                    @foreach ($pcs as $pc)
-                        <option value="{{ $pc->id }}">{{ $pc->name }}</option>
-                    @endforeach
-                </select>
-                @error('selectedPcId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-            </div>
-
-            <!-- Day Selection -->
-            <div class="mb-4">
-                <label for="edit-day" class="text-sm font-semibold text-gray-700">Day:</label>
-                <select wire:model="dayOfWeek" id="edit-day" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
-                    <option value="">Select a day</option>
-                    @foreach ($days as $day)
-                        <option value="{{ $day }}">{{ $day }}</option>
-                    @endforeach
-                </select>
-                @error('dayOfWeek') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-            </div>
-
-            <!-- Submit Button -->
-            <div class="flex space-x-2">
-                <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
-                <button type="button" wire:click="deleteAssignment({{ $selectedAssignmentId }})" class="inline-block px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
-                <button type="button" wire:click="cancelEdit" class="inline-block px-2 py-1 bg-gray-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
-            </div>
-        </form>
-        @else
-    <p>No form displayed</p>
-
-    @endif
+        <!-- Submit Button -->
+        <div class="flex space-x-2">
+            <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
+            <button type="button" wire:click="deleteAssignment({{ $selectedAssignmentId }})" class="inline-block px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
+            <button type="button" wire:click="cancelEdit" class="inline-block px-2 py-1 bg-gray-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
+        </div>
+    </form>
+@endif
 </div>
