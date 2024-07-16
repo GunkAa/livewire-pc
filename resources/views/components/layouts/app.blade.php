@@ -11,7 +11,7 @@
 <body class="bg-gray-200">
   
   {{-- navbar --}}
-  @include('components.layouts.nav-bar')
+  <!-- @include('components.layouts.nav-bar') -->
 
   {{-- Load page based on route --}}
   <div>
@@ -20,6 +20,10 @@
         {{ $slot }}
     @endisset
   </div>
-  
+
+ 
+
+
+
 </body>
 </html>
