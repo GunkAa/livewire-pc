@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\Pc;
@@ -14,21 +13,20 @@ class Home extends Component
     // Define component properties
     public $selectedUserId;
     public $selectedPcId;
+    public $selectedPcName;
     public $dayOfWeek;
     public $days;
     public $selectedDay;
     public $rooms;
     public $users;
     public $availabilityByDay;
-    public $editingAssignment;
     public $showForm = false;  // To control form visibility
     public $selectedAssignmentId;
-    public $assignmentId;
-    public $pcs;
 
 
     public function mount()
     {
+        // Initialize component properties
         $this->days = [
             'Monday Morning', 'Monday Afternoon', 'Tuesday Morning', 'Tuesday Afternoon',
             'Wednesday Morning', 'Wednesday Afternoon', 'Thursday Morning', 'Thursday Afternoon',
@@ -36,13 +34,22 @@ class Home extends Component
         ];
         $this->selectedDay = $this->days[0];
         $this->rooms = Room::with('pcs')->get();
-        $this->pcs = Pc::all(); // Ensure this line is present
         $this->users = User::all();
         $this->loadAvailability();
     }
 
+    protected function rules()
+    {
+        return [
+            'selectedUserId' => 'required|exists:users,id',
+            'selectedPcId' => 'required|exists:pcs,id',
+            'dayOfWeek' => 'required|in:Monday Morning,Monday Afternoon,Tuesday Morning,Tuesday Afternoon,Wednesday Morning,Wednesday Afternoon,Thursday Morning,Thursday Afternoon,Friday Morning,Friday Afternoon'
+        ];
+    }
+
     public function loadAvailability()
     {
+        // Load availability of PCs by day
         $this->availabilityByDay = [];
 
         foreach ($this->rooms as $room) {
@@ -59,18 +66,23 @@ class Home extends Component
 
     public function dayChanged($value)
     {
+        // Update selected day and reload availability
         $this->selectedDay = $value;
         $this->loadAvailability();
     }
 
     public function editAssignment($pcId)
     {
+        // Fetch assignment for the selected PC and day
         $assignment = Assignment::where('pc_id', $pcId)
             ->where('day_of_week', $this->selectedDay)
             ->first();
+
+            $pc = Pc::findOrFail($pcId);
+            $this->selectedPcName = $pc->name; // Update the selected PC name
     
         if ($assignment) {
-            // Assignment found: Populate form fields for editing
+            //If Assignment found: Populate form fields for editing
             $this->selectedUserId = $assignment->user_id;
             $this->selectedPcId = $assignment->pc_id;
             $this->dayOfWeek = $assignment->day_of_week;
@@ -87,30 +99,41 @@ class Home extends Component
     
             $this->showForm = true; // Show the form to create a new assignment
     
-    
             // You can also perform any additional initialization needed for creating a new assignment
         }
     }
 
-    public function cancelEdit()
-    {
-        $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
-        $this->showForm = false;
-    }
-
     public function updateAssignment()
     {
-        $validatedData = $this->validate([
-            'selectedUserId' => 'required|exists:users,id',
+         // Validate form data
+        $validatedData = $this->validate();
 
-        ]);
+        // Check if the User is already assigned on the selected day
+        $alreadyAssigned = Assignment::where('user_id', $validatedData['selectedUserId'])
+            ->where('day_of_week', $validatedData['dayOfWeek'])
+            ->exists();
+        
+        if ($alreadyAssigned) {
+            $this->addError('selectedUserId', 'This User is already assigned on ' . $validatedData['dayOfWeek']);
+            return;
+        }
     
-        $assignment = Assignment::findOrFail($this->selectedAssignmentId);
+        if ($this->selectedAssignmentId) {
+            // Update existing assignment
+            $assignment = Assignment::findOrFail($this->selectedAssignmentId);
+            $assignment->update([
+                'user_id' => $validatedData['selectedUserId'],
+            ]);
+        } else {
+            // Create new assignment
+            $assignment = Assignment::create([
+                'user_id' => $validatedData['selectedUserId'],
+                'pc_id' => $validatedData['selectedPcId'],
+                'day_of_week' => $validatedData['dayOfWeek'],
+            ]);
+        }
     
-        $assignment->update([
-            'user_id' => $validatedData['selectedUserId'],
-        ]);
-    
+        // Reload availability and reset form
         $this->loadAvailability();
         $this->showForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
@@ -126,6 +149,13 @@ class Home extends Component
         $this->loadAvailability();
         $this->showForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
+    }
+
+    public function cancelEdit()
+    {
+        // Reset form fields and hide the form
+        $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
+        $this->showForm = false;
     }
 
     public function render()
