@@ -10,7 +10,7 @@ use App\Models\Assignment;
 
 class AssignmentManager extends Component
 {
-    // Protected $listeners = ['assignment-deleted' => '$refresh'];
+    // Define component properties
     public $users;
     public $pcs;
     public $selectedUserId;
@@ -24,6 +24,7 @@ class AssignmentManager extends Component
 
     public function mount()
     {
+        // Initialize component properties
         $this->users = User::all();
         $this->pcs = Pc::all();
         $this->days = [
@@ -38,6 +39,7 @@ class AssignmentManager extends Component
 
     protected function rules()
     {
+        // Validation rules component properties
         return [
             'selectedUserId' => 'required|exists:users,id',
             'selectedPcId' => 'required|exists:pcs,id',
@@ -45,8 +47,10 @@ class AssignmentManager extends Component
         ];
     }
 
+    // Create Assignment
     public function createAssignment()
     {
+        // Validation
         $validatedData = $this->validate();
         
         // Check if the User is already assigned on the selected day
