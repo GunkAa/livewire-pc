@@ -7,13 +7,17 @@ use App\Models\User;
 use App\Models\Pc;
 use Livewire\Component;
 use App\Models\Assignment;
+use Livewire\Attributes\Rule;
 
 class Home extends Component
 {
     // Define component properties
+    #[Rule('required|exists:users,id')]
     public $selectedUserId;
+    #[Rule('required|exists:pcs,id')]
     public $selectedPcId;
     public $selectedPcName;
+    #[Rule('required|in:Monday Morning,Monday Afternoon,Tuesday Morning,Tuesday Afternoon,Wednesday Morning,Wednesday Afternoon,Thursday Morning,Thursday Afternoon,Friday Morning,Friday Afternoon')]
     public $dayOfWeek;
     public $days;
     public $selectedDay;
@@ -21,6 +25,7 @@ class Home extends Component
     public $users;
     public $availabilityByDay;
     public $showForm = false;  // To control form visibility
+    public $createForm = false;
     public $selectedAssignmentId;
 
 // Lifecycle hook that is called once, immediately after the component is instantiated
@@ -36,16 +41,6 @@ class Home extends Component
         $this->rooms = Room::with('pcs')->get(); // Load rooms with their PCs
         $this->users = User::all(); //Load all users
         $this->loadAvailability(); // Load the availability data
-    }
-
-    // Define validation rules for component properties
-    protected function rules()
-    {
-        return [
-            'selectedUserId' => 'required|exists:users,id',
-            'selectedPcId' => 'required|exists:pcs,id',
-            'dayOfWeek' => 'required|in:Monday Morning,Monday Afternoon,Tuesday Morning,Tuesday Afternoon,Wednesday Morning,Wednesday Afternoon,Thursday Morning,Thursday Afternoon,Friday Morning,Friday Afternoon'
-        ];
     }
 
     // Load availability of PCs by day
@@ -89,14 +84,14 @@ class Home extends Component
             $this->selectedPcId = $assignment->pc_id;
             $this->dayOfWeek = $assignment->day_of_week;
             $this->selectedAssignmentId = $assignment->id;
-            $this->showForm = true;  // Show the form
+            $this->showForm = true;  // Show the form to update assignment
         } else {
             // No assignment found: Prepare for creating a new assignment
             $this->selectedPcId = $pcId; // Set the PC ID
             $this->selectedUserId = null; // Clear user ID (if previously set)
             $this->dayOfWeek = $this->selectedDay; // Set the day of the week
             $this->selectedAssignmentId = null; // Clear selected assignment ID (if previously set)
-            $this->showForm = true; // Show the form to create a new assignment
+            $this->createForm = true; // Show the form to create a new assignment
         }
     }
 
@@ -135,6 +130,7 @@ class Home extends Component
         // Reload availability and reset form
         $this->loadAvailability();
         $this->showForm = false;
+        $this->createForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
     }
 
@@ -148,6 +144,7 @@ class Home extends Component
         // Reload availability and reset form
         $this->loadAvailability();
         $this->showForm = false;
+        $this->createForm = false;
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
     }
 
@@ -157,6 +154,7 @@ class Home extends Component
         // Reset form fields and hide the form
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
         $this->showForm = false;
+        $this->creatForm = false;
     }
 
     // Render the component view

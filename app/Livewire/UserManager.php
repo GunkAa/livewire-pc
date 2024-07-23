@@ -10,6 +10,7 @@ use Livewire\Attributes\Rule;
 class UserManager extends Component
 {
     protected $listeners = ['user-deleted' => '$refresh'];
+    
     #[Rule('min:3|max:50|required')]
     public $name;
     #[Rule('max:250')]

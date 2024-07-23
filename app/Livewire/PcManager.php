@@ -21,7 +21,6 @@ class PCManager extends Component
     public $comments;
     public $pcs;
     public $rooms;
-    #[Rule('required')]
     public $room_id;
     public $selectedPCId;
     #[Rule('required')]
@@ -103,6 +102,7 @@ class PCManager extends Component
         $this->validate([
             'name' => 'required|min:3|max:50',
             'comments' => 'max:250',
+            'selectedRoomId' => 'required',
         ]);
 
         // Find the PC by ID
