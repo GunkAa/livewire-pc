@@ -9,6 +9,9 @@ use Livewire\Attributes\Rule;
 
 class UserManager extends Component
 {
+    // Load pagination
+    use WithPagination;  
+    // Listeners for page refreshing on deleting
     protected $listeners = ['user-deleted' => '$refresh'];
     
     #[Rule('min:3|max:50|required')]
@@ -17,15 +20,19 @@ class UserManager extends Component
     public $comments;
     public $users;
     public $selectedUserId;
-    public $editingUser = false;
+    public $editingUser = false; //Controll showing form 
+    public $search = ''; //Default Search field
+    public $sortField = 'name'; // Default sort field
+    public $sortDirection = 'asc'; // Default sort direction
+    public $perPage = 10; // Number of items per page
 
-    // mount users
+    // Mount users
     public function mount()
     {
         $this->users = User::all();
     
     }
-    // create user
+    // Create user
     public function create()
     {
         $this->validate();
@@ -105,8 +112,31 @@ class UserManager extends Component
         $this->reset('name', 'comments', 'selectedUserId','editingUser');
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortDirection = 'asc';
+        }
+
+        $this->sortField = $field;
+    }
+
     public function render()
     {
-        return view('livewire.user-manager');
+        $users = User::query()
+        ->where('name', 'like', '%' . $this->search . '%')
+        ->orderBy($this->sortField, $this->sortDirection)
+        ->paginate($this->perPage);
+
+        return view('livewire.user-manager',[
+            'users' => $users,
+        ]);
     }
 }

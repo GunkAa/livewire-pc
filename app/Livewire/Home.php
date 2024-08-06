@@ -24,12 +24,12 @@ class Home extends Component
     public $rooms;
     public $users;
     public $availabilityByDay;
-    public $showForm = false;  // To control form visibility
-    public $createForm = false;
+    public $showForm = false;  //Controll showing update form
+    public $createForm = false; //Controll showing create form
     public $selectedAssignmentId;
 
 // Lifecycle hook that is called once, immediately after the component is instantiated
-    public function mount()
+    public function mount($title = 'Default Title')
     {
         // Initialize component properties
         $this->days = [
@@ -37,6 +37,7 @@ class Home extends Component
             'Wednesday Morning', 'Wednesday Afternoon', 'Thursday Morning', 'Thursday Afternoon',
             'Friday Morning', 'Friday Afternoon'
         ];
+        $this->pageTitle = $title;
         $this->selectedDay = $this->days[0]; // Set the default selected day
         $this->rooms = Room::with('pcs')->get(); // Load rooms with their PCs
         $this->users = User::all(); //Load all users
@@ -154,7 +155,7 @@ class Home extends Component
         // Reset form fields and hide the form
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
         $this->showForm = false;
-        $this->creatForm = false;
+        $this->createForm = false;
     }
 
     // Render the component view

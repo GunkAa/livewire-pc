@@ -8,7 +8,7 @@
   <title>@yield('title')</title>
 </head>
 
-<body class="bg-gray-200">
+<body class="bg-white">
   
   {{-- navbar --}}
   @include('components.layouts.nav-bar')

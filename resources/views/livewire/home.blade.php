@@ -3,7 +3,7 @@
         <h1 class="text-3xl font-semibold mb-5">PC Availability</h1>
 
         @if ($showForm)
-            <form wire:submit.prevent="updateAssignment" class="bg-white rounded-lg shadow-md p-6 mb-8"> <!-- Added mb-8 for more space -->
+            <form wire:submit.prevent="updateAssignment" class="bg-gray-200 rounded-lg shadow-md p-6 mb-8"> <!-- Added mb-8 for more space -->
                 <h2 class="text-lg font-semibold mb-4">Update Assignment: {{ $selectedPcName }}</h2>
 
                 <!-- Hidden Assignment ID -->
@@ -12,7 +12,7 @@
                 <!-- User Selection -->
                 <div class="mb-4">
                     <label for="edit-user" class="text-sm font-semibold text-gray-700">User:</label>
-                    <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                         <option value="">Select a user</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -32,7 +32,7 @@
 
         
         @if ($createForm)
-            <form wire:submit.prevent="updateAssignment" class="bg-white rounded-lg shadow-md p-6 mb-8"> <!-- Added mb-8 for more space -->
+            <form wire:submit.prevent="updateAssignment" class="bg-gray-200 rounded-lg shadow-md p-6 mb-8"> <!-- Added mb-8 for more space -->
                 <h2 class="text-lg font-semibold mb-4">Create Assignment: {{ $selectedPcName }}</h2>
 
                 <!-- Hidden Assignment ID -->
@@ -41,7 +41,7 @@
                 <!-- User Selection -->
                 <div class="mb-4">
                     <label for="edit-user" class="text-sm font-semibold text-gray-700">User:</label>
-                    <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <select wire:model="selectedUserId" id="edit-user" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                         <option value="">Select a user</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -59,10 +59,10 @@
         @endif
 
         <!-- Select Day -->
-        <form wire:submit.prevent="loadAvailability" class="mb-8"> <!-- Added mb-8 for more space -->
+        <form wire:submit.prevent="loadAvailability" class="mb-8 p-3 bg-gray-200 rounded-lg"> <!-- Added mb-8 for more space -->
             <div class="mb-4">
                 <label for="day" class="font-semibold">Select a Daypart:</label>
-                <select wire:model="selectedDay" wire:change="dayChanged($event.target.value)" id="day" name="day" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <select wire:model="selectedDay" wire:change="dayChanged($event.target.value)" id="day" name="day" class="block w-full py-2 px-3 mt-4 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     @foreach ($days as $day)
                         <option value="{{ $day }}">{{ $day }}</option>
                     @endforeach
@@ -74,7 +74,7 @@
         <div class="grid grid-cols-2 gap-4 mt-4">
             @foreach ($rooms as $room)
                 @if (isset($availabilityByDay[$room->id]))
-                    <div class="p-3 bg-white rounded-lg">
+                    <div class="p-3 bg-gray-200 rounded-lg">
                         <h2 class="text-xl font-semibold mb-2">{{ $room->name }}</h2>
                         <div class="grid grid-cols-4 gap-4">
                             @foreach ($availabilityByDay[$room->id] as $pcDay)

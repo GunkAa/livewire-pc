@@ -5,7 +5,7 @@
     <!-- User Creation Form -->
     <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
         @if (!$editingUser)
-        <form wire:submit.prevent="create" class="bg-white rounded-lg shadow-md p-6">
+        <form wire:submit.prevent="create" class="bg-gray-200 rounded-lg shadow-md p-6">
             <h2 class="text-lg font-semibold mb-4">Create User</h2>
             <div class="mb-4">
                 <label for="name" class="text-sm font-semibold text-gray-700">Name:</label>
@@ -21,7 +21,7 @@
         </form>
         @else
         <!-- Update User Form -->
-        <form wire:submit.prevent="update" class="bg-white rounded-lg shadow-md p-6">
+        <form wire:submit.prevent="update" class="bg-gray-200 rounded-lg shadow-md p-6">
             <h2 class="text-lg font-semibold mb-4">Update User</h2>
             <!-- Update form fields -->
             <input type="hidden" wire:model="selectedUserId">
@@ -45,9 +45,11 @@
     </div>
 
     <!-- User List -->
-    <div class="w-full md:w-1/2 lg:w-2/3 px-4 mb-8">
-        <ul class="space-y-4">
-            @foreach ($users as $user)
+    <div class="ml-24 bg-gray-200 rounded-lg shadow-md p-6" style="width: 395.438px;"
+        <div class="mt-5">
+        <h3 class="text-lg font-semibold mb-4">User List</h3>
+            <ul class="space-y-4">
+                @foreach ($users as $user)
                 <li class="bg-white rounded-lg shadow-md p-4">
                     <!-- User details -->
                     <div class="flex justify-between items-center">
@@ -74,8 +76,9 @@
                         </div>
                     </div>
                 </li>
-            @endforeach
-        </ul>
+                @endforeach
+            </ul>
+        </div>
     </div>
 </div>
 

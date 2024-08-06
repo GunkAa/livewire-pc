@@ -2,7 +2,7 @@
 <div class="max-w-4xl mx-auto flex flex-wrap">
     <div class="w-full md:w-1/2 lg:w-1/3 px-4 mb-8">
         @if (!$editingPC)
-            <form wire:submit.prevent="create" class="bg-white rounded-lg shadow-md p-6">
+            <form wire:submit.prevent="create" class="bg-gray-200 rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold mb-4">Create PC</h2>
                 <div class="mb-4">
                     <label for="name" class="text-sm font-semibold text-gray-700">Name:</label>
@@ -16,7 +16,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="room" class="text-sm font-semibold text-gray-700">Room:</label>
-                    <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 bg-white rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                         <option value="">Select a room</option>
                         @foreach ($rooms as $room)
                             <option value="{{ $room->id }}">{{ $room->name }}</option>
@@ -28,7 +28,7 @@
             </form>
         @else
             <!-- Update PC Form -->
-            <form wire:submit.prevent="update" class="bg-white rounded-lg shadow-md p-6">
+            <form wire:submit.prevent="update" class="bg-gray-200 rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold mb-4">Update PC</h2>
                 <!-- Update form fields -->
                 <input type="hidden" wire:model="selectedPCId" name="selectedPCId"> <!-- Hidden input field -->
@@ -44,7 +44,7 @@
                 </div>
                 <div class="mb-4">
                     <label for="room" class="text-sm font-semibold text-gray-700">Room:</label>
-                    <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                         <option value="">Select a room</option>
                         @foreach ($rooms as $room)
                             <option value="{{ $room->id }}">{{ $room->name }}</option>
@@ -62,8 +62,9 @@
     </div>
 
     {{-- Display Room Selection and PC List --}}
-    <div class="mt-8 ml-24" style="width: 395.438px;">
+    <div class="ml-24 bg-gray-200 rounded-lg shadow-md p-6" style="width: 395.438px;">
         <div class="mb-4">
+            <h3 class="text-lg font-semibold mb-4">PC List</h3>
             <label for="room" class="font-semibold">Select a Room:</label>
             <select wire:model="room_id" wire:change="filterByRoom" id="room" name="room" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">All Rooms</option>
