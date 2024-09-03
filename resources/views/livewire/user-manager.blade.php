@@ -45,11 +45,53 @@
     </div>
 
     <!-- User List -->
-    <div class="ml-24 bg-gray-200 rounded-lg shadow-md p-6" style="width: 395.438px;"
+    <div class="ml-24 bg-gray-200 rounded-lg shadow-md p-6" style="width: 395.438px;">
         <div class="mt-5">
-        <h3 class="text-lg font-semibold mb-4">User List</h3>
-            <ul class="space-y-4">
-                @foreach ($users as $user)
+            <h3 class="text-lg font-semibold mb-4">User List</h3>
+            
+        <!-- Search Bar -->
+        <div class="mb-4">
+            <input type="text" wire:model.live="search" placeholder="Search users..." class="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+        </div>
+
+        <!-- Sorting Buttons -->
+        <div class="mb-4 flex space-x-4">
+            <!-- Sort by Name -->
+            <button wire:click="sortBy('name')" class="inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-600 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Name
+                @if ($sortField === 'name')
+                    @if ($sortDirection === 'asc')
+                        <svg class="w-4 h-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    @else
+                        <svg class="w-4 h-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    @endif
+                @endif
+            </button>
+
+            <!-- Sort by Date Created -->
+            <button wire:click="sortBy('created_at')" class="inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-600 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Date Created
+                @if ($sortField === 'created_at')
+                    @if ($sortDirection === 'asc')
+                        <svg class="w-4 h-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                    @else
+                        <svg class="w-4 h-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    @endif
+                @endif
+            </button>
+        </div>
+
+        <!--List -->
+        <ul class="space-y-4">
+            @foreach ($users as $user)
                 <li class="bg-white rounded-lg shadow-md p-4">
                     <!-- User details -->
                     <div class="flex justify-between items-center">
@@ -78,6 +120,11 @@
                 </li>
                 @endforeach
             </ul>
+                
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 </div>

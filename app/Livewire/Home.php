@@ -86,6 +86,7 @@ class Home extends Component
             $this->dayOfWeek = $assignment->day_of_week;
             $this->selectedAssignmentId = $assignment->id;
             $this->showForm = true;  // Show the form to update assignment
+            $this->createForm = false;
         } else {
             // No assignment found: Prepare for creating a new assignment
             $this->selectedPcId = $pcId; // Set the PC ID
@@ -93,6 +94,7 @@ class Home extends Component
             $this->dayOfWeek = $this->selectedDay; // Set the day of the week
             $this->selectedAssignmentId = null; // Clear selected assignment ID (if previously set)
             $this->createForm = true; // Show the form to create a new assignment
+            $this->showForm = false;
         }
     }
 
@@ -154,6 +156,7 @@ class Home extends Component
     {
         // Reset form fields and hide the form
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
+        $this->resetErrorBag();
         $this->showForm = false;
         $this->createForm = false;
     }

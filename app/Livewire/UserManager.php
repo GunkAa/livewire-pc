@@ -2,15 +2,17 @@
 
 namespace App\Livewire;
 
-use Exception;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;  
 
 class UserManager extends Component
 {
     // Load pagination
-    use WithPagination;  
+    use WithPagination, WithoutUrlPagination;
+
     // Listeners for page refreshing on deleting
     protected $listeners = ['user-deleted' => '$refresh'];
     
@@ -18,20 +20,15 @@ class UserManager extends Component
     public $name;
     #[Rule('max:250')]
     public $comments;
-    public $users;
+    // public $users;
     public $selectedUserId;
     public $editingUser = false; //Controll showing form 
     public $search = ''; //Default Search field
     public $sortField = 'name'; // Default sort field
     public $sortDirection = 'asc'; // Default sort direction
     public $perPage = 10; // Number of items per page
+    protected $paginationTheme = 'tailwind';
 
-    // Mount users
-    public function mount()
-    {
-        $this->users = User::all();
-    
-    }
     // Create user
     public function create()
     {
@@ -44,7 +41,7 @@ class UserManager extends Component
         ]);
 
         // Refresh user list
-        $this->users = User::all();
+        // $this->users = User::all();
 
     // Reset input fields after creating user
         $this->reset(['name','comments']);
@@ -122,10 +119,9 @@ class UserManager extends Component
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
+            $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
-
-        $this->sortField = $field;
     }
 
     public function render()
@@ -135,8 +131,7 @@ class UserManager extends Component
         ->orderBy($this->sortField, $this->sortDirection)
         ->paginate($this->perPage);
 
-        return view('livewire.user-manager',[
-            'users' => $users,
-        ]);
+    return view('livewire.user-manager', ['users' => $users]);
     }
+
 }

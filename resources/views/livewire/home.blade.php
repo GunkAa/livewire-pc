@@ -72,23 +72,28 @@
         
         <!-- Render Rooms and PC's -->
         <div class="grid grid-cols-2 gap-4 mt-4">
-            @foreach ($rooms as $room)
-                @if (isset($availabilityByDay[$room->id]))
-                    <div class="p-3 bg-gray-200 rounded-lg">
-                        <h2 class="text-xl font-semibold mb-2">{{ $room->name }}</h2>
-                        <div class="grid grid-cols-4 gap-4">
-                            @foreach ($availabilityByDay[$room->id] as $pcDay)
-                                <button wire:click.prevent="editAssignment({{ $pcDay['pc']->id }})" class="bg-{{ $pcDay['isAvailable'] ? 'green' : 'red' }}-500 text-white font-bold text-center py-4 rounded-lg">
-                                    <p class="text-lg">{{ $pcDay['pc']->name }}</p>
-                                    <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
-                                    <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
-                                    <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-        </div>
+    @foreach ($rooms as $room)
+        @if (isset($availabilityByDay[$room->id]))
+            <div class="p-3 bg-gray-200 rounded-lg">
+                <h2 class="text-xl font-semibold mb-2">{{ $room->name }}</h2>
+                <div class="grid grid-cols-4 gap-4">
+                    @foreach ($availabilityByDay[$room->id] as $pcDay)
+                        <button wire:click.prevent="editAssignment({{ $pcDay['pc']->id }})"
+                            @class([
+                                'text-white font-bold text-center py-4 rounded-lg',
+                                'bg-green-500' => $pcDay['isAvailable'],
+                                'bg-red-500' => !$pcDay['isAvailable'],
+                            ])>
+                            <p class="text-lg">{{ $pcDay['pc']->name }}</p>
+                            <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
+                            <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
+                            <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    @endforeach
+</div>
     </div>
 </div>

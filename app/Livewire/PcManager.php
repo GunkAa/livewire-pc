@@ -7,10 +7,13 @@ use App\Models\PC;
 use App\Models\Room;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
-use Illuminate\Support\Facades\Log;
+use Livewire\WithPagination;
+use Livewire\WithoutUrlPagination;  
 
-class PCManager extends Component
+
+class PcManager extends Component
 {
+    use WithPagination, WithoutUrlPagination;
     // Define component properties and listeners
     protected $listeners = ['pc-deleted' => '$refresh'];
 
@@ -19,7 +22,6 @@ class PCManager extends Component
     public $name;
     #[Rule('max:250')]
     public $comments;
-    public $pcs;
     public $rooms;
     public $room_id;
     public $selectedPCId;
@@ -27,36 +29,35 @@ class PCManager extends Component
     public $selectedRoomId;
     public $selectedFilterRoomId;
     public $editingPC = false; // Flag to indicate if a PC is being edited
+    public $search = ''; //Default Search field
+    public $sortField = 'name'; // Default sort field
+    public $sortDirection = 'asc'; // Default sort direction
+    public $perPage = 10; // Number of items per page
 
     // Lifecycle hook that is called once, immediately after the component is instantiated
     public function mount()
     {
         // Initialize component properties
-        $this->pcs = PC::all(); // Load all PCs
         $this->rooms = Room::all(); // Load all rooms
     }
 
-    // Filter PCs based on the selected room
+// Filter Rooms and handles Pagination 
     public function filterByRoom()
-    {
-        // Log the current room_id
-        info('filterByRoom called with room_id:', ['room_id' => $this->room_id]);
-
-        if ($this->room_id) {
-            // Check if the room exists
-            $room = Room::find($this->room_id);
-            if ($room) {
-                // Filter PCs by room_id
-                $this->pcs = PC::where('room_id', $this->room_id)->latest()->get();
-            } else {
-                // Reset PCs if room does not exist
-                $this->pcs = PC::latest()->get();
-            }
-        } else {
-            // Get all PCs if no room is selected
-            $this->pcs = PC::latest()->get();
-        }
+{
+    if ($this->room_id) {
+        $pcs = PC::where('room_id', $this->room_id)->latest()
+            ->where('name', 'like', '%' . $this->search . '%')
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->perPage);
+    } else {
+        $pcs = PC::latest()
+            ->where('name', 'like', '%' . $this->search . '%')
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate($this->perPage);
     }
+
+    return $pcs;
+}
 
     // Create PC
     public function create()
@@ -157,9 +158,27 @@ class PCManager extends Component
         $this->reset(['name', 'comments', 'selectedPCId', 'selectedRoomId', 'editingPC']);
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
+
     // Render the component view
     public function render()
     {
-        return view('livewire.pc-manager');
+        $pcs = $this->filterByRoom();
+        // ->where('name', 'like', '%' . $this->search . '%');
+        // ->orderBy($this->sortField, $this->sortDirection);
+        return view('livewire.pc-manager',['pcs' => $pcs, 'rooms' => $this->rooms]);
     }
 }
