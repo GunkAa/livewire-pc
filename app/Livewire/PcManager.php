@@ -25,10 +25,13 @@ class PcManager extends Component
     public $rooms;
     public $room_id;
     public $selectedPCId;
-    #[Rule('required')]
+    #[Rule('nullable')]
     public $selectedRoomId;
     public $selectedFilterRoomId;
+    public $defect = false;
     public $editingPC = false; // Flag to indicate if a PC is being edited
+    public $showDeleteModal = false; // Control modal visibility
+    public $pcIdToDelete;            // Store the ID of the PC to be deleted
     public $search = ''; //Default Search field
     public $sortField = 'name'; // Default sort field
     public $sortDirection = 'asc'; // Default sort direction
@@ -41,23 +44,35 @@ class PcManager extends Component
         $this->rooms = Room::all(); // Load all rooms
     }
 
-// Filter Rooms and handles Pagination 
-    public function filterByRoom()
-{
-    if ($this->room_id) {
-        $pcs = PC::where('room_id', $this->room_id)->latest()
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->perPage);
-    } else {
-        $pcs = PC::latest()
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->perPage);
+    // Filter Rooms and handles Pagination 
+        public function filterByRoom()
+    {
+        if ($this->room_id === 'unassigned') {
+            return PC::whereNull('room_id')
+                ->where('name', 'like', '%' . $this->search . '%')
+                ->orderBy($this->sortField, $this->sortDirection)
+                ->paginate($this->perPage);
+        } elseif ($this->room_id) {
+            // If a specific room is selected
+            return PC::where('room_id', $this->room_id)
+                ->where('name', 'like', '%' . $this->search . '%')
+                ->orderBy($this->sortField, $this->sortDirection)
+                ->paginate($this->perPage);
+        } else {
+            $pcs = PC::latest()
+                ->where('name', 'like', '%' . $this->search . '%')
+                ->orderBy($this->sortField, $this->sortDirection)
+                ->paginate($this->perPage);
+        }
+
+        return $pcs;
     }
 
-    return $pcs;
-}
+    public function updatingRoomId($value)
+    {
+        // Reset the pagination when filtering by room
+        $this->resetPage();
+    }
 
     // Create PC
     public function create()
@@ -71,6 +86,7 @@ class PcManager extends Component
             'comments' => $this->comments,
             'room_id' => $this->selectedRoomId,
             'is_available' => true, // Default to available
+            'defect' => false,
             // Add other fields if needed
         ]);
 
@@ -93,6 +109,8 @@ class PcManager extends Component
             $this->name = $this->editingPC->name;
             $this->comments = $this->editingPC->comments;
             $this->selectedRoomId = $this->editingPC->room_id;
+            $this->defect = (bool) $this->editingPC->defect;
+            
         }
     }
 
@@ -103,7 +121,8 @@ class PcManager extends Component
         $this->validate([
             'name' => 'required|min:3|max:50',
             'comments' => 'max:250',
-            'selectedRoomId' => 'required',
+            'selectedRoomId' => 'nullable',
+            'defect' => 'nullable|boolean',
         ]);
 
         // Find the PC by ID
@@ -113,7 +132,8 @@ class PcManager extends Component
             $pc->update([
                 'name' => $this->name,
                 'comments' => $this->comments,
-                'room_id' => $this->selectedRoomId,                
+                'room_id' => $this->selectedRoomId,  
+                'defect' => $this->defect,             
                 // Add other fields if needed
             ]);
 
@@ -124,7 +144,7 @@ class PcManager extends Component
             $this->filterByRoom();
 
             // Reset input fields after updating PC
-            $this->reset(['name', 'comments', 'selectedPCId', 'selectedRoomId', 'editingPC']);
+            $this->reset(['name', 'comments', 'selectedPCId', 'selectedRoomId', 'editingPC', 'defect']);
         }
     }
 
@@ -177,8 +197,9 @@ class PcManager extends Component
     public function render()
     {
         $pcs = $this->filterByRoom();
-        // ->where('name', 'like', '%' . $this->search . '%');
-        // ->orderBy($this->sortField, $this->sortDirection);
-        return view('livewire.pc-manager',['pcs' => $pcs, 'rooms' => $this->rooms]);
+        return view('livewire.pc-manager',[
+            'pcs' => $pcs,
+            'rooms' => $this->rooms,
+        ]);
     }
 }

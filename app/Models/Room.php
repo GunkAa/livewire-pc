@@ -10,6 +10,11 @@ class Room extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'comments',
+    ];
+
     public function pcs()
     {
         return $this->hasMany(Pc::class);

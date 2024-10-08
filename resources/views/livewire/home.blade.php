@@ -24,7 +24,7 @@
                 <!-- Submit Button -->
                 <div class="flex space-x-2">
                     <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update</button>
-                    <button type="button" wire:click="deleteAssignment({{ $selectedAssignmentId }})" class="inline-block px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
+                    <button type="button" wire:click="deleteAssignment({{ $selectedAssignmentId }})" class="inline-block px-2 py-1 bg-red-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Remove</button>
                     <button type="button" wire:click="cancelEdit" class="inline-block px-2 py-1 bg-gray-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
                 </div>
             </form>
@@ -52,7 +52,7 @@
 
                 <!-- Submit Button -->
                 <div class="flex space-x-2">
-                    <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create</button>
+                    <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Add User</button>
                     <button type="button" wire:click="cancelEdit" class="inline-block px-2 py-1 bg-gray-600 text-white text-xs font-semibold rounded-md shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancel</button>
                 </div>
             </form>
@@ -88,6 +88,7 @@
                             <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
                             <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
                             <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
+
                         </button>
                     @endforeach
                 </div>

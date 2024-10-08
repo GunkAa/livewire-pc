@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('comments')->nullable();
             $table->boolean('is_available')->default(true);
+            $table->boolean('defect')->default(false);
             $table->unsignedBigInteger('room_id')->nullable();
             $table->foreign('room_id')->references('id')->on('rooms')->onDelete('set null');
             $table->timestamps();

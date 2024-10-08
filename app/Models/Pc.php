@@ -18,6 +18,7 @@ class Pc extends Model
         'comments',
         'is_available',
         'room_id',
+        'defect'
     ];
 
     public function assignments()

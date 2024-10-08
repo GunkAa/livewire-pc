@@ -4,16 +4,19 @@
         @if (!$editingPC)
             <form wire:submit.prevent="create" class="bg-gray-200 rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold mb-4">Create PC</h2>
+                <!-- Name -->
                 <div class="mb-4">
                     <label for="name" class="text-sm font-semibold text-gray-700">Name:</label>
                     <input wire:model.defer="name" type="text" id="name" class="mt-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm w-full">
                     @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Comments -->
                 <div class="mb-4">
                     <label for="comments" class="text-sm font-semibold text-gray-700">Comments:</label>
                     <textarea wire:model.defer="comments" id="comments" rows="3" class="mt-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm w-full"></textarea>
                     @error('comments') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Room Selection -->
                 <div class="mb-4">
                     <label for="room" class="text-sm font-semibold text-gray-700">Room:</label>
                     <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 bg-white rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
@@ -24,24 +27,37 @@
                     </select>
                     @error('selectedRoomId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Button -->
                 <button type="submit" class="inline-block px-6 py-2 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Create PC</button>
             </form>
         @else
             <!-- Update PC Form -->
             <form wire:submit.prevent="update" class="bg-gray-200 rounded-lg shadow-md p-6">
                 <h2 class="text-lg font-semibold mb-4">Update PC</h2>
-                <!-- Update form fields -->
-                <input type="hidden" wire:model="selectedPCId" name="selectedPCId"> <!-- Hidden input field -->
+                <!-- Hidden input field -->
+                <input type="hidden" wire:model="selectedPCId" name="selectedPCId"> 
+                <!-- Name -->
                 <div class="mb-4">
                     <label for="edit-name" class="text-sm font-semibold text-gray-700">Name:</label>
                     <input wire:model.defer="name" type="text" id="edit-name" class="mt-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm w-full">
                     @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Comments -->
                 <div class="mb-4">
                     <label for="edit-comments" class="text-sm font-semibold text-gray-700">Comments:</label>
                     <textarea wire:model.defer="comments" id="edit-comments" rows="3" class="mt-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm w-full"></textarea>
                     @error('comments') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Defect Toggle -->
+                <div class="mb-4">
+                    <label class="inline-flex items-center me-5 cursor-pointer">
+                        <!-- Hidden checkbox that controls the toggle -->
+                        <input type="checkbox" wire:model="defect" value="1" class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Defect</span>
+                    </label>
+                </div>
+                <!-- Room Selection -->
                 <div class="mb-4">
                     <label for="room" class="text-sm font-semibold text-gray-700">Room:</label>
                     <select wire:model="selectedRoomId" id="room" class="mt-1 block w-full px-4 py-2 rounded-md border border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500 text-sm">
@@ -52,6 +68,7 @@
                     </select>
                     @error('selectedRoomId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
+                <!-- Buttons -->
                 <div class="flex space-x-4">
                     <button type="submit" class="inline-block px-2 py-1 bg-indigo-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Update PC</button>
                     <button type="button" wire:click="delete({{ $selectedPCId }})" class="inline-block px-2 py-1 bg-red-600 text-white font-semibold rounded-md shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Delete</button>
@@ -61,21 +78,23 @@
         @endif
     </div>
 
-    {{-- Display Room Selection and PC List --}}
+    <!--Display Room Selection and PC List --> 
     <div class="ml-24 bg-gray-200 rounded-lg shadow-md p-6" style="width: 395.438px;">
         <div class="mb-4">
             <h3 class="text-lg font-semibold mb-4">PC List</h3>
+            <!-- Room Selection -->
             <label for="room" class="font-semibold">Select a Room:</label>
             <select wire:model="room_id" wire:change="filterByRoom" id="room" name="room" class="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 <option value="">All Rooms</option>
                 @foreach ($rooms as $room)
                     <option value="{{ $room->id }}">{{ $room->name }}</option>
                 @endforeach
+                <option value="unassigned">Not Assigned</option> <!-- Option for unassigned PCs -->
             </select>            
         </div>
 
-                <!-- Search Bar -->
-                <div class="mb-4">
+        <!-- Search Bar -->
+        <div class="mb-4">
             <input type="text" wire:model.live="search" placeholder="Search PCs..." class="w-full px-4 py-2 rounded-md border border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
         </div>
 
@@ -120,12 +139,18 @@
             @foreach ($pcs as $pc)
                 @if (!$selectedFilterRoomId || $pc->room_id == $selectedFilterRoomId)
                     <li class="bg-white rounded-lg shadow-md p-4">
-                        <!-- PC details -->
+                        <!-- PC Card -->
                         <div class="flex justify-between items-center">
                             <div>
-                                <span class="text-lg font-semibold">{{ $pc->name }}</span>
+                                <span class="text-lg font-semibold ">{{ $pc->name }}</span>
+                                @if ($pc->defect)
+                                    <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+                                        <span class="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
+                                        Defect
+                                    </span>
+                                @endif
                                 <p class="text-gray-600">{{ $pc->comments }}</p>
-                                <p class="text-gray-600">{{ $pc->room->name }}</p>
+                                <p class="text-gray-600">{{ $pc->room ? $pc->room->name : 'No Room Assigned' }}</p>
                             </div>
                             <!-- Edit and delete buttons -->
                             <div class="flex items-center space-x-2">
@@ -152,6 +177,20 @@
         <div class="mt-4">
             {{ $pcs->links() }}
         </div>
+        
+        <!-- Delete Confirmation Modal -->
+        @if ($showDeleteModal)
+            <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-lg font-semibold">Are you sure you want to delete this PC?</h2>
+                    <p class="mt-2">This action cannot be undone.</p>
+                    <div class="mt-4 flex space-x-2">
+                        <button wire:click="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded-md">Yes, Delete</button>
+                        <button wire:click="cancelDelete" class="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 

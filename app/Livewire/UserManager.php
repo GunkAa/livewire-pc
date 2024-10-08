@@ -40,9 +40,6 @@ class UserManager extends Component
             // Add other fields if needed
         ]);
 
-        // Refresh user list
-        // $this->users = User::all();
-
     // Reset input fields after creating user
         $this->reset(['name','comments']);
     }

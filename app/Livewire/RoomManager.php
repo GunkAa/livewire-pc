@@ -3,10 +3,28 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Rule;
 use App\Models\Room;
+use App\Models\PC;
 
 class RoomManager extends Component
 {
+    protected $listeners = ['room-deleted' => '$refresh'];
+
+    #[Rule('min:3|max:50|required')]
+    public $name;
+    #[Rule('max:250')]
+    public $comments;
+    public $rooms;
+    public $room_id;
+    public $selectedRoomId;
+    public $editingRoom = false; // Flag to indicate if a PC is being edited
+
+        public function mount()
+        {
+            $this->rooms = Room::all();
+        }
+
         // Create room
         public function create()
         {
@@ -17,9 +35,10 @@ class RoomManager extends Component
                 'comments' => $this->comments,
                 // Add other fields if needed
             ]);
-    
 
-        // Reset input fields after creating room
+            // Refresh Room List 
+            $this->rooms = Room::all();
+            // Reset input fields after creating room
             $this->reset(['name','comments']);
         }
     
@@ -66,15 +85,17 @@ class RoomManager extends Component
     
             // Check if the room exists
             if ($room) {
+            // Unassign PCs from this room
+            PC::where('room_id', $roomId)->update(['room_id' => null]);
             // Delete the room
             $room->delete();
             }
     
             // Dispatch event
-            $this->dispatch('user-deleted');
+            $this->dispatch('room-deleted');
             // Reset selected room ID if needed
-            if ($this->selectedUserId === $roomId) {
-                $this->selectedUserId = null;
+            if ($this->selectedRoomId === $roomId) {
+                $this->selectedRoomId = null;
             }
             
             $this->reset('name', 'comments','editingRoom','selectedRoomId');
