@@ -119,12 +119,24 @@
                     </div>
                 </li>
                 @endforeach
-            </ul>
-                
+            </ul>  
             <!-- Pagination Links -->
             <div class="mt-4">
                 {{ $users->links() }}
             </div>
+            <!-- Delete Confirmation Modal -->
+            @if ($showDeleteModal)
+                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-lg font-semibold">Are you sure you want to delete this Room?</h2>
+                        <p class="mt-2">This action cannot be undone.</p>
+                        <div class="mt-4 flex space-x-2">
+                            <button wire:click="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded-md">Yes, Delete</button>
+                            <button wire:click="cancelDelete" class="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

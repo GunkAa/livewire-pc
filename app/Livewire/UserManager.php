@@ -12,22 +12,40 @@ class UserManager extends Component
 {
     // Load pagination
     use WithPagination, WithoutUrlPagination;
-
-    // Listeners for page refreshing on deleting
-    protected $listeners = ['user-deleted' => '$refresh'];
     
-    #[Rule('min:3|max:50|required')]
     public $name;
-    #[Rule('max:250')]
     public $comments;
-    // public $users;
     public $selectedUserId;
-    public $editingUser = false; //Controll showing form 
-    public $search = ''; //Default Search field
+    public $uniqueRule;
+    public $userIdToDelete; // Store the ID of the user to be deleted
+    public $editingUser = false; // Show editingform 
+    public $showDeleteModal= false; //Show delete modal
+    public $search = ''; //Default search field
     public $sortField = 'name'; // Default sort field
     public $sortDirection = 'asc'; // Default sort direction
     public $perPage = 10; // Number of items per page
     protected $paginationTheme = 'tailwind';
+
+    // Define validation rules
+    public function rules()
+    {
+        $uniqueRule = 'unique:users,name';
+
+        // If we are editing an existing user, ignore their ID in the unique rule
+        if ($this->selectedUserId) {
+            $uniqueRule .= ",$this->selectedUserId";
+        }
+
+        return [
+            'name' => [
+                'min:3',
+                'max:50',
+                'required', 
+                $uniqueRule,
+            ],
+            'comments' => 'max:250',
+        ];
+    }
 
     // Create user
     public function create()
@@ -58,10 +76,7 @@ class UserManager extends Component
 
     public function update()
     {
-        $this->validate([
-            'name' => 'required|min:3|max:50',
-            'comments' => 'max:250',
-        ]);
+        $this->validate();
 
         $user = User::find($this->selectedUserId);
         if ($user) {
@@ -70,20 +85,26 @@ class UserManager extends Component
                 'comments' => $this->comments,
                 // Add other fields if needed
             ]);
-
             // Refresh user list
             $this->users = User::all();
-
             // Reset input fields after updating user
-            $this->reset(['name','comments','editingUser','selectedUserId']);
+            $this->cancelEdit();
         }
     }
 
-        // delete user 
+
+    // Function to trigger the delete confirmation modal
     public function delete($userId)
     {
+        $this->userIdToDelete = $userId;
+        $this->showDeleteModal = true; // Show the modal
+    }
+
+    // Confirm the deletion
+    public function confirmDelete()
+    {
         // Find the user by ID
-        $user = User::find($userId);
+        $user = User::find($this->userIdToDelete);
 
         // Check if the user exists
         if ($user) {
@@ -91,19 +112,29 @@ class UserManager extends Component
         $user->delete();
         }
 
-        // Dispatch event
-        $this->dispatch('user-deleted');
-        // Reset selected user ID if needed
-        if ($this->selectedUserId === $userId) {
-            $this->selectedUserId = null;
-        }
-        
-        $this->reset('name', 'comments','editingUser','selectedUserId');
+        // Reset input fields
+        $this->cancelEdit();
+
+        // Reset modal state
+        $this->resetDeleteState();
+    } 
+
+    // Cancel the deletion action and close the modal
+    public function cancelDelete()
+    {
+        $this->resetDeleteState();
+    }
+
+    // Helper function to reset the modal and deletion state
+    private function resetDeleteState()
+    {
+        $this->showDeleteModal = false;
+        $this->userIdToDelete = null;
     }
 
     public function cancelEdit()
     {
-        $this->reset('name', 'comments', 'selectedUserId','editingUser');
+        $this->reset('name', 'comments', 'selectedUserId','editingUser',);
     }
 
     public function updatingSearch()

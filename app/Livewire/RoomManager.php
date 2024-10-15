@@ -8,98 +8,142 @@ use App\Models\Room;
 use App\Models\PC;
 
 class RoomManager extends Component
-{
-    protected $listeners = ['room-deleted' => '$refresh'];
-
-    #[Rule('min:3|max:50|required')]
+{   
     public $name;
-    #[Rule('max:250')]
     public $comments;
     public $rooms;
     public $room_id;
+    public $roomIdToDelete;
     public $selectedRoomId;
     public $editingRoom = false; // Flag to indicate if a PC is being edited
+    public $showDeleteModal= false;
 
-        public function mount()
-        {
-            $this->rooms = Room::all();
+    public function mount()
+    {
+        $this->rooms = Room::all();
+    }
+
+    // Define validation rules
+    public function rules()
+    {
+        $uniqueRule = 'unique:rooms,name';
+
+        // If we are editing an existing user, ignore their ID in the unique rule
+        if ($this->selectedRoomId) {
+            $uniqueRule .= ",$this->selectedRoomId";
         }
 
-        // Create room
-        public function create()
-        {
-            $this->validate();
+        return [
+            'name' => [
+                'min:3',
+                'max:50',
+                'required', 
+                $uniqueRule,
+            ],
+            'comments' => 'max:250',
+        ];
+    }
+
+    // Create room
+    public function create()
+    {
+        $this->validate();
     
-            Room::create([
+        Room::create([
+            'name' => $this->name,
+            'comments' => $this->comments,
+            // Add other fields if needed
+        ]);
+
+        // Refresh Room List 
+        $this->rooms = Room::all();
+        // Reset input fields after creating room
+        $this->reset(['name','comments']);
+    }
+    
+    // Select room for editing
+    public function edit($roomId)
+    {
+        $this->editingRoom = Room::find($roomId);
+        if ($this->editingRoom) {
+            $this->selectedRoomId = $this->editingRoom->id;
+            $this->name = $this->editingRoom->name;
+            $this->comments = $this->editingRoom->comments;
+            // Add other fields if needed
+        }
+    }
+    
+    public function update()
+    {
+        $this->validate();
+
+        $room = Room::find($this->selectedRoomId);
+        if ($room) {
+            $room->update([
                 'name' => $this->name,
                 'comments' => $this->comments,
                 // Add other fields if needed
             ]);
-
-            // Refresh Room List 
+    
+            // Refresh room list
             $this->rooms = Room::all();
-            // Reset input fields after creating room
-            $this->reset(['name','comments']);
+    
+            // Reset input fields after updating room
+            $this->cancelEdit();
         }
+    }
+
+    // Cancel editing and reset input fields
+    public function cancelEdit()
+    {
+        $this->reset(['name', 'comments', 'editingRoom', 'selectedRoomId']);
+    }
     
-        // Select room for editing
-        public function edit($roomId)
-        {
-            $this->editingRoom = Room::find($roomId);
-            if ($this->editingRoom) {
-                $this->selectedRoomId = $this->editingRoom->id;
-                $this->name = $this->editingRoom->name;
-                $this->comments = $this->editingRoom->comments;
-                // Add other fields if needed
-            }
+    // Function to trigger the delete confirmation modal
+    public function delete($roomId)
+    {
+        $this->roomIdToDelete = $roomId;
+        $this->showDeleteModal = true; // Show the modal
+    }
+
+    // Confirm the deletion
+    public function confirmDelete()
+    {
+        // Find the room by ID
+        $room = Room::find($this->roomIdToDelete);
+    
+        // Check if the room exists
+        if ($room) {
+        // Unassign PCs from this room
+        PC::where('room_id', $room->id)->update(['room_id' => null]);
+        // Delete the room
+        $room->delete();
         }
-    
-        public function update()
-        {
-            $this->validate([
-                'name' => 'required|min:3|max:50',
-                'comments' => 'max:250',
-            ]);
-    
-            $room = Room::find($this->selectedRoomId);
-            if ($room) {
-                $room->update([
-                    'name' => $this->name,
-                    'comments' => $this->comments,
-                    // Add other fields if needed
-                ]);
-    
-                // Refresh room list
-                $this->rooms = Room::all();
-    
-                // Reset input fields after updating room
-                $this->reset(['name','comments','editingRoom','selectedRoomId']);
-            }
+        // Reset selected room ID if needed
+        if ($this->selectedRoomId === $this->roomIdToDelete) {
+            $this->selectedRoomId = null;
         }
-    
-            // delete room 
-        public function delete($roomId)
-        {
-            // Find the room by ID
-            $room = Room::find($roomId);
-    
-            // Check if the room exists
-            if ($room) {
-            // Unassign PCs from this room
-            PC::where('room_id', $roomId)->update(['room_id' => null]);
-            // Delete the room
-            $room->delete();
-            }
-    
-            // Dispatch event
-            $this->dispatch('room-deleted');
-            // Reset selected room ID if needed
-            if ($this->selectedRoomId === $roomId) {
-                $this->selectedRoomId = null;
-            }
-            
-            $this->reset('name', 'comments','editingRoom','selectedRoomId');
-        }
+        // Reset input fields
+        $this->cancelEdit();
+        // Reset modal state
+        $this->resetDeleteState();
+        //  Update room list 
+        $this->rooms = Room::all();
+    } 
+
+    // Cancel the deletion action and close the modal
+    public function cancelDelete()
+    {
+        $this->resetDeleteState();
+    }
+
+    // Helper function to reset the modal and deletion state
+    private function resetDeleteState()
+    {
+        $this->showDeleteModal = false;
+        $this->roomIdToDelete = null;
+    }
+
     public function render()
     {
         return view('livewire.room-manager');

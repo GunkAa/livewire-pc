@@ -25,6 +25,7 @@ class Home extends Component
     public $users;
     public $availabilityByDay;
     public $defect;
+    public $showDeleteModal;
     public $showForm = false;  //Controll showing update form
     public $createForm = false; //Controll showing create form
     public $selectedAssignmentId;
