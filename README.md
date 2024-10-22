@@ -8,7 +8,7 @@ install steps
     php artisan migrate
     php artisan serve
     npm install
-    npm run dev
+
 
     php artisan db:seed --class=RoomSeeder : creates 3 rooms
     php artisan db:seed --class=PCSeeder : creates 10 pcs in every room
