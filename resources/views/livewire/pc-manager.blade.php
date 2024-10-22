@@ -54,7 +54,7 @@
                         <!-- Hidden checkbox that controls the toggle -->
                         <input type="checkbox" wire:model="defect" value="1" class="sr-only peer">
                         <div class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Defect</span>
+                        <span class="ms-3 text-sm font-medium text-gray-700 dark: font-semibold text-gray-700">Defect</span>
                     </label>
                 </div>
                 <!-- Room Selection -->
@@ -182,7 +182,6 @@
             <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
                 <div class="bg-white p-6 rounded-lg shadow-lg">
                     <h2 class="text-lg font-semibold">Are you sure you want to delete this PC?</h2>
-                    <p class="mt-2">This action cannot be undone.</p>
                     <div class="mt-4 flex space-x-2">
                         <button wire:click="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded-md">Yes, Delete</button>
                         <button wire:click="cancelDelete" class="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>

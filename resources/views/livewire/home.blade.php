@@ -78,36 +78,30 @@
                         <h2 class="text-xl font-semibold mb-2">{{ $room->name }}</h2>
                         <div class="grid grid-cols-4 gap-4">
                             @foreach ($availabilityByDay[$room->id] as $pcDay)
-                                <button wire:click.prevent="editAssignment({{ $pcDay['pc']->id }})"
-                                    @class([
-                                        'text-white font-bold text-center py-4 rounded-lg',
-                                        'bg-green-500' => $pcDay['isAvailable'],
-                                        'bg-red-500' => !$pcDay['isAvailable'],
-                                    ])>
-                                    <p class="text-lg">{{ $pcDay['pc']->name }}</p>
-                                    <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
-                                    <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
-                                    <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
-
-                                </button>
+                            <button wire:click.prevent="editAssignment({{ $pcDay['pc']->id }})"
+                                @class([
+                                    'text-white font-bold text-center py-4 rounded-lg',
+                                    'bg-gray-800' => $pcDay['isAvailable'],   // Available - Green
+                                    'bg-gray-400' => !$pcDay['isAvailable'],   // Taken - Neutral Gray
+                                ])>
+                                <p class="text-lg">{{ $pcDay['pc']->name }}</p>
+                                <p class="text-sm">{{ $pcDay['pc']->room->name }}</p>
+                                <p class="text-sm text-gray-700 bg-slate-300">{{ $pcDay['pc']->assignedUserName($selectedDay) }}</p>
+                                
+                                @if ($pcDay['pc']->defect)
+                                <span class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+                                    <span class="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
+                                        Defect
+                                    </span>
+                                @else
+                                <p>Available: {{ $pcDay['isAvailable'] ? 'Yes' : 'No' }}</p>
+                                @endif
+                            </button>
                             @endforeach
                         </div>
                     </div>
                 @endif
             @endforeach
-                    <!-- Delete Confirmation Modal -->
-            @if ($showDeleteModal)
-                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 class="text-lg font-semibold">Are you sure you want to delete this Room?</h2>
-                        <p class="mt-2">This action cannot be undone.</p>
-                        <div class="mt-4 flex space-x-2">
-                            <button wire:click="confirmDelete" class="bg-red-500 text-white px-4 py-2 rounded-md">Yes, Delete</button>
-                            <button wire:click="cancelDelete" class="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
 </div>
