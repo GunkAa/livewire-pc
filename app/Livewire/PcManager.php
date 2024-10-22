@@ -13,25 +13,31 @@ use Livewire\WithoutUrlPagination;
 
 class PcManager extends Component
 {
+    //Load Pagination
     use WithPagination, WithoutUrlPagination;
-    // Define component properties and validation rules using attributes
-    public $name;
-    public $comments;
+     
+    // Properties related PC 
+    public $name; 
+    public $comments; 
     public $rooms;
     public $room_id;
     public $selectedPCId;
     public $selectedRoomId;
     public $selectedFilterRoomId;
-    public $defect = false; // Show defect PC
-    public $editingPC = false; // Flag to indicate if a PC is being edited
-    public $showDeleteModal = false; // Control modal visibility
-    public $pcIdToDelete; // Store the ID of the PC to be deleted
+    public $pcIdToDelete; 
+
+    // Filter
     public $search = ''; //Default Search field
     public $sortField = 'name'; // Default sort field
     public $sortDirection = 'asc'; // Default sort direction
     public $perPage = 10; // Number of items per page
 
-    // Lifecycle hook that is called once, immediately after the component is instantiated
+    // UI
+    public $defect = false; // Controll showing defect PC
+    public $editingPC = false; //Controll showing update form
+    public $showDeleteModal = false; // Control modal visibility
+    
+    // Lifecycle method to initialize the component
     public function mount()
     {
         // Initialize component properties
@@ -87,7 +93,9 @@ class PcManager extends Component
     // Select PC for editing
     public function edit($pcId)
     {
-        $this->editingPC = PC::find($pcId); // Find the PC by ID
+        // Find the PC by ID
+        $this->editingPC = PC::find($pcId); 
+        // Populate the component properties with the PC data
         if ($this->editingPC) {
             $this->selectedPCId = $this->editingPC->id;
             $this->name = $this->editingPC->name;
@@ -192,17 +200,20 @@ class PcManager extends Component
         return $pcs;
     }
 
+     // Reset pagination when filtering by room
     public function updatingRoomId($value)
     {
         // Reset the pagination when filtering by room
         $this->resetPage();
     }
 
+    // Reset pagination when search term is updated
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
+    // Toggle sorting direction
     public function sortBy($field)
     {
         if ($this->sortField === $field) {

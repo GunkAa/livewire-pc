@@ -17,11 +17,11 @@ class Assignment extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id'); // Relationship with User model
     }
 
     public function pc()
     {
-        return $this->belongsTo(Pc::class);
+        return $this->belongsTo(Pc::class); // Relationship with Pc model
     }
 }

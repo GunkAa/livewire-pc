@@ -23,14 +23,14 @@ class Pc extends Model
 
     public function assignments()
     {
-        return $this->hasMany(Assignment::class);
+        return $this->hasMany(Assignment::class); // Relationship with Assignment model
     }
 
     public function availabilityByDay()
     {
         return $this->assignments()
             ->where('day_of_week', now()->format('l'))
-            ->count() === 0;
+            ->count() === 0; // Check availability for today
     }
 
     /**
@@ -39,20 +39,19 @@ class Pc extends Model
      * @param  string  $selectedDay
      * @return bool
      */
-
      public function isAvailable($selectedDay)
      {
-         return $this->assignments()->where('day_of_week', '=', $selectedDay)->count() === 0;
+         return $this->assignments()->where('day_of_week', '=', $selectedDay)->count() === 0; // Check availability for a specific day
      }
 
     public function room()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Room::class); // Relationship with Room model
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class); // Relationship with User model
     }
 
     public function assignedUserName($selectedDay)
@@ -60,15 +59,15 @@ class Pc extends Model
         $assignment = $this->assignments()->where('day_of_week', '=', $selectedDay)->first();
 
         if ($assignment && $assignment->user) {
-            return $assignment->user->name;
+            return $assignment->user->name; // Return assigned user's name
         }
 
-        return 'Not Assigned';
+        return 'Not Assigned'; // Default return value
     }
 
     public function isAssigned($selectedDay)
     {
-        return $this->assignments()->where('day_of_week', '=', $selectedDay)->exists();
+        return $this->assignments()->where('day_of_week', '=', $selectedDay)->exists(); // Check if assigned for a specific day
     }
 
 }

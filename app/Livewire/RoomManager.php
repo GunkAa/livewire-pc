@@ -9,18 +9,22 @@ use App\Models\PC;
 
 class RoomManager extends Component
 {   
+    // Properties related Room 
     public $name;
     public $comments;
     public $rooms;
     public $room_id;
     public $roomIdToDelete;
     public $selectedRoomId;
-    public $editingRoom = false; // Flag to indicate if a PC is being edited
-    public $showDeleteModal= false;
+    
+    // UI
+    public $editingRoom = false; //Controll showing update form
+    public $showDeleteModal= false; //Control modal visibility
 
+    // Lifecycle method to initialize the component
     public function mount()
     {
-        $this->rooms = Room::all();
+        $this->rooms = Room::all(); // Load all rooms
     }
 
     // Define validation rules
@@ -73,6 +77,7 @@ class RoomManager extends Component
         }
     }
     
+    // Update an existing Room
     public function update()
     {
         $this->validate();
@@ -144,6 +149,7 @@ class RoomManager extends Component
         $this->roomIdToDelete = null;
     }
 
+    // Render the component view
     public function render()
     {
         return view('livewire.room-manager');

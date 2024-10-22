@@ -17,7 +17,7 @@ class Room extends Model
 
     public function pcs()
     {
-        return $this->hasMany(Pc::class);
+        return $this->hasMany(Pc::class); // Relationship with PC model
     }
 }
 

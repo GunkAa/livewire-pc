@@ -13,18 +13,23 @@ class UserManager extends Component
     // Load pagination
     use WithPagination, WithoutUrlPagination;
     
+    // Properties related PC
     public $name;
     public $comments;
     public $selectedUserId;
     public $uniqueRule;
     public $userIdToDelete; // Store the ID of the user to be deleted
-    public $editingUser = false; // Show editingform 
-    public $showDeleteModal= false; //Show delete modal
+
+    // Filter
     public $search = ''; //Default search field
     public $sortField = 'name'; // Default sort field
     public $sortDirection = 'asc'; // Default sort direction
     public $perPage = 10; // Number of items per page
-    protected $paginationTheme = 'tailwind';
+
+    // UI
+    public $editingUser = false; // Show editingform 
+    public $showDeleteModal= false; //Show delete modal
+    protected $paginationTheme = 'tailwind'; //PaginationTheme
 
     // Define validation rules
     public function rules()
@@ -132,16 +137,19 @@ class UserManager extends Component
         $this->userIdToDelete = null;
     }
 
+    // Cancel editing and reset input fields
     public function cancelEdit()
     {
         $this->reset('name', 'comments', 'selectedUserId','editingUser',);
     }
 
+    // Reset pagination when search term is updated
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
+    // Toggle sorting direction
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
@@ -152,6 +160,7 @@ class UserManager extends Component
         }
     }
 
+    // Render the component view
     public function render()
     {
         $users = User::query()

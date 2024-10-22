@@ -15,10 +15,7 @@
 
   {{-- Load page based on route --}}
   <div>
-    {{-- Only include $slot if it's defined --}}
-    @isset($slot)
-        {{ $slot }}
-    @endisset
+    {{ $slot }}
   </div>
 
  

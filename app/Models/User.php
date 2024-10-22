@@ -45,6 +45,6 @@ class User extends Authenticatable
     // Define the assignments relationship
     public function assignments()
     {
-        return $this->hasMany(Assignment::class);
+        return $this->hasMany(Assignment::class); // Relationship with Assignment model
     }
 }

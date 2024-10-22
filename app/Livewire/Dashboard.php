@@ -2,38 +2,50 @@
 
 namespace App\Livewire;
 
+use Livewire\Component;
 use App\Models\Room;
 use App\Models\User;
 use App\Models\Pc;
-use Livewire\Component;
 use App\Models\Assignment;
 use Livewire\Attributes\Rule;
 
-class Home extends Component
+class Dashboard extends Component
 {
-    // Define component properties
+    // Properties related to user and PC assignment
     #[Rule('required|exists:users,id')]
     public $selectedUserId;
+    public $users;
+    
     #[Rule('required|exists:pcs,id')]
     public $selectedPcId;
     public $selectedPcName;
+
+    public $selectedAssignmentId;
+    
+    // Day selection for assignment
     #[Rule('required|in:Monday Morning,Monday Afternoon,Tuesday Morning,Tuesday Afternoon,Wednesday Morning,Wednesday Afternoon,Thursday Morning,Thursday Afternoon,Friday Morning,Friday Afternoon')]
     public $dayOfWeek;
     public $days;
     public $selectedDay;
+   
+    // Properties related to rooms
     public $rooms;
-    public $users;
+
+    // Filter
+    public $pageTitle;
     public $availabilityByDay;
-    public $defect;
+
+    // UI
     public $showDeleteModal;
     public $showForm = false;  //Controll showing update form
     public $createForm = false; //Controll showing create form
-    public $selectedAssignmentId;
 
-// Lifecycle hook that is called once, immediately after the component is instantiated
+
+
+    // Lifecycle method to initialize the component
     public function mount($title = 'Default Title')
     {
-        // Initialize component properties
+        // Define the available time slots for each day of the week
         $this->days = [
             'Monday Morning', 'Monday Afternoon', 'Tuesday Morning', 'Tuesday Afternoon',
             'Wednesday Morning', 'Wednesday Afternoon', 'Thursday Morning', 'Thursday Afternoon',
@@ -49,12 +61,17 @@ class Home extends Component
     // Load availability of PCs by day
     public function loadAvailability()
     {
-        $this->availabilityByDay = [];
+        $this->availabilityByDay = []; // Initialize the availability array
 
+        // Iterate through each room
         foreach ($this->rooms as $room) {
-            $pcs = $room->pcs;
+            $pcs = $room->pcs; // Get the PCs associated with the room
+            
+            // Iterate through each PC in the room
             foreach ($pcs as $pc) {
-                $isAvailable = $pc->isAvailable($this->selectedDay);
+                $isAvailable = $pc->isAvailable($this->selectedDay); // Check if the PC is available on the selected day
+                
+                // Store the PC information and its availability status
                 $this->availabilityByDay[$room->id][] = [
                     'pc' => $pc,
                     'isAvailable' => $isAvailable,
@@ -80,7 +97,7 @@ class Home extends Component
 
             $pc = Pc::findOrFail($pcId);
             $this->selectedPcName = $pc->name; // Update the selected PC name
-    
+
         if ($assignment) {
             //If Assignment found: Populate form fields for editing
             $this->selectedUserId = $assignment->user_id;
@@ -103,7 +120,7 @@ class Home extends Component
     // Update or create an assignment
     public function updateAssignment()
     {
-         // Validate form data
+        // Validate form data
         $validatedData = $this->validate();
 
         // Check if the User is already assigned on the selected day
@@ -116,7 +133,7 @@ class Home extends Component
             $this->addError('selectedUserId', 'This User is already assigned on ' . $validatedData['dayOfWeek']);
             return;
         }
-    
+
         if ($this->selectedAssignmentId) {
             // Update existing assignment
             $assignment = Assignment::findOrFail($this->selectedAssignmentId);
@@ -131,12 +148,10 @@ class Home extends Component
                 'day_of_week' => $validatedData['dayOfWeek'],
             ]);
         }
-    
+
         // Reload availability and reset form
         $this->loadAvailability();
-        $this->showForm = false;
-        $this->createForm = false;
-        $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
+        $this->resetForm();
     }
 
     // Delete an assignment
@@ -145,27 +160,30 @@ class Home extends Component
         // Find and delete the assignment
         $assignment = Assignment::findOrFail($assignmentId);
         $assignment->delete();
-    
+
         // Reload availability and reset form
         $this->loadAvailability();
-        $this->showForm = false;
-        $this->createForm = false;
-        $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
+        $this->resetForm();
     }
 
     // Cancel editing and reset form fields
     public function cancelEdit()
     {
-        // Reset form fields and hide the form
+        $this->resetForm();
+    }
+    
+    // Resets form properties
+    private function resetForm()
+    {
         $this->reset(['selectedUserId', 'selectedPcId', 'dayOfWeek', 'selectedAssignmentId']);
         $this->resetErrorBag();
-        $this->showForm = false;
-        $this->createForm = false;
+        $this->showForm = false; //Controll showing update form
+        $this->createForm = false; //Controll showing create form
     }
 
     // Render the component view
     public function render()
     {
-        return view('livewire.home');
+        return view('livewire.dashboard');
     }
 }
