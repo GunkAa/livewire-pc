@@ -8,6 +8,7 @@ install steps
     php artisan migrate
     php artisan serve
     npm install
+    npm dev run
 
 
     php artisan db:seed --class=RoomSeeder : creates 3 rooms
